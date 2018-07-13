@@ -59,10 +59,10 @@ app.post(
   ({body: {payload, response_url}}, res) =>{
     res.status(200).end() // best practice to respond with 200 status
     const data = JSON.parse(payload); // parse URL-encoded payload JSON string
-    
+
     sendMessageToSlackResponseURL(data.response_url, {
       "text": data.user.name+" clicked: "+data.actions[0].name,
-      "replace_original": false
+      "replace_original": true
     });
   }
 )
