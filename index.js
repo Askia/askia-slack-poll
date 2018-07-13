@@ -53,6 +53,20 @@ app.post('/post', ({body: {token, response_url}}, res) => {
   }
 });
 
+app.post(
+  '/actions',
+  bodyParser.urlencoded({extended: false}),
+  ({body: {payload, response_url}}, res) =>{
+    res.status(200).end() // best practice to respond with 200 status
+    const data = JSON.parse(payload); // parse URL-encoded payload JSON string
+    
+    sendMessageToSlackResponseURL(data.response_url, {
+      "text": data.user.name+" clicked: "+data.actions[0].name,
+      "replace_original": false
+    });
+  }
+)
+
 app.listen(app.get('port'), () => {
   console.log('Node app is running on port', app.get('port'))
 });
