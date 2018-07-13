@@ -3,13 +3,16 @@
   "description": "A slack app poll",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.3"
+  "license": "Askia",
+  "scripts": {
+    "start": "node index.js"
   },
   "engines": {
     "yarn": "1.7.0",
     "node": "9.11.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
   }
 }
