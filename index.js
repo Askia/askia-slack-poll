@@ -14,7 +14,7 @@ app.post('/post', (req, res) => {
 
   const {body, response_url, token} = req;
 
-  console.log(response_url);
+  console.log(req);
   sendMessageToSlackResponseURL(response_url, {
     "text": "This is your first interactive message",
     "attachments": [
