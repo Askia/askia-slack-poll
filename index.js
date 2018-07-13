@@ -15,6 +15,7 @@ app.post('/post', (req, res) => {
   const {body, response_url, token} = req;
 
   if (token !== process.env.SLACK_APP_TOKEN) {
+    console.error('Invalid token');
     res.status(403).end('Access forbidden');
   }
   else {
