@@ -53,7 +53,10 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
     .then(data => {
       chart.destroy();
     })
-    .catch(e => chart.destroy());
+    .catch(e => {
+      console.error(e);
+      chart.destroy();
+    });
   }
   else {
     res.status(404).end();
