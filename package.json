@@ -15,8 +15,8 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "chart.js": "^2.7.2",
-    "chartjs-node": "^1.7.1",
     "express": "^4.16.3",
+    "node-chartjs": "^0.0.7",
     "request": "^2.87.0"
   }
 }

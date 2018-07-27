@@ -3,7 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const parser     = require('./src/parser');
 const db         = require('./src/db');
-const Chart      = require('chartjs-node');
+const Chart      = require('node-chartjs');
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
 
     const chart = new Chart(600, 600);
 
-    chart.drawChart({
+    chart.makeChart({
       type: 'bar',
       options: {},
       data: {
@@ -42,21 +42,23 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
           }
         ]
       }
-    })
-    .then(data => {
-      console.log("chart::generated");
-
-      res.status(200);
-      res.contentType('image/jpeg');
-      res.end(chart.getImageBuffer('image/png'), 'binary');
-    })
-    .then(data => {
-      chart.destroy();
-    })
-    .catch(e => {
-      console.error(e);
-      chart.destroy();
     });
+
+    chart
+      .toBuffer()
+      .then(buffer => {
+        console.log("chart::generated");
+
+        res.status(200);
+        res.contentType('image/jpeg');
+        res.end(buffer, 'binary');
+      })
+      .then(() => chart.destroy())
+      .catch(e => {
+        console.error(e);
+        chart.destroy();
+        res.status(500).end();
+      });
   }
   else {
     res.status(404).end();
