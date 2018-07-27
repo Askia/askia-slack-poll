@@ -24,7 +24,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
 
     const chart = new Chart(600, 600);
 
-    chart.makeChart({
+    chart.drawChart({
       type: 'bar',
       options: {},
       data: {
@@ -42,10 +42,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
           }
         ]
       }
-    });
-
-    chart
-      .toBuffer()
+    }).then(() => chart.getImageBuffer('image/png'))
       .then(buffer => {
         console.log("chart::generated");
 
