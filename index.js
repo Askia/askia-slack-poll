@@ -26,6 +26,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
 
     chart.drawChart({
       type: 'bar',
+      options: {},
       data: {
         labels: poll.responses.map(x => x.text),
         datasets: [
@@ -40,8 +41,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
             data: poll.responses.map(x => x.votes)
           }
         ]
-      },
-      options: {}
+      }
     })
     .then(data => {
       console.log("chart::generated");
@@ -52,7 +52,8 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
     })
     .then(data => {
       chart.destroy();
-    });
+    })
+    .catch(e => chart.destroy());
   }
   else {
     res.status(404).end();
