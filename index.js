@@ -3,6 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const app        = express();
 const parser     = require('./src/parser');
+const db         = require('./src/db');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -10,7 +11,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
 
-app.post('/post', ({body: {token, text, response_url}}, res) => {
+app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
   res.status(200).end();
 
   if (token !== process.env.SLACK_APP_TOKEN) {
@@ -24,7 +25,7 @@ app.post('/post', ({body: {token, text, response_url}}, res) => {
       res.status(400).end('Not enough values found');
     }
     else {
-      const poll = polls.generate(values);
+      const poll = db.generate(user_id, values);
 
       sendMessageToSlackResponseURL(response_url, {
         "text": "This is your first interactive message",
@@ -52,7 +53,7 @@ app.post(
     const data = JSON.parse(payload);
 
     sendMessageToSlackResponseURL(data.response_url, {
-      "text": data.user.name+" clicked: "+data.actions[0].name,
+      "text": data.user.name +" clicked: "+ data.actions[0].name,
       "replace_original": true
     });
   }
@@ -74,22 +75,3 @@ const sendMessageToSlackResponseURL = (uri, json) => {
     }
   })
 }
-
-const polls = {
-  generate: (values) => ({
-    id: seed++,
-    question: values[0],
-    responses: values
-      .slice(1)
-      .reduce((xs, x, i) => [...xs, item(i + 1, x)], [])
-  })
-};
-
-const item = (id, text, type = "button") => ({
-  "type": "button",
-  "name": id,
-  "value": id,
-  text
-});
-
-let seed = 0;
