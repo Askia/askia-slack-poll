@@ -8,7 +8,7 @@ const fold = (cs, f, initial) => {
   let sum = initial;
   let ret;
 
-  while ((ret = textReg.exec(data))) sum = f(sum, ret);
+  while ((ret = textReg.exec(cs))) sum = f(sum, ret);
   return sum;
 };
 
