@@ -24,34 +24,53 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
     console.log("chart::votes", poll.responses.map(x => x.votes));
 
     const chart = new Chart(600, 600);
-
+    const data  = poll.responses.map(x => x.votes);
+    const max   = Math.max(poll.responses)
     chart.drawChart({
       type: 'horizontalBar',
       data: {
         labels: poll.responses.map(x => x.text),
         datasets: [
           {
+            data,
             label: "PollChart",
-            data: poll.responses.map(x => x.votes)
+            backgroundColor:'rgba(205,85,85,.5)',
+            borderColor: 'rgba(140,12,12,1)',
+            borderWidth: 2
+          },
+          {
+              label: '# of Votes',
+              data: Array.from(poll.responses, () => max),
+              backgroundColor:'rgba(205,85,85,0)',
+              borderColor: 'rgba(140,12,12,1)',
+              borderWidth: 2,
           }
         ]
       },
       options: {
+        legend: {
+          display: false
+        },
         scales: {
           xAxes: [
             {
+              stacked: true,
               gridLines: {
-                display: false
+                display: false,
+                drawBorder: false
               }
             }
           ],
           yAxes: [
             {
-              gridLines: {
-                display: false
-              },
+              stacked: true,
               ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                mirror: true
+              },
+              gridLines: {
+                display: false,
+                drawBorder: false
               }
             }
           ]
