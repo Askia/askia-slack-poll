@@ -31,7 +31,7 @@ const response = (id, text, type = "button") => ({
   "type": "button",
   "name": id,
   "value": id,
-  "count": 0,
+  "votes": 0,
   text
 });
 
