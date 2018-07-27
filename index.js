@@ -18,8 +18,10 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
   console.log("chart::poll", poll);
 
   chart.drawChart({
-      type: 'bar',
-      data: poll.responses.map(x => x.votes)
+    options: {
+        type: 'bar',
+        data: poll.responses.map(x => x.votes)
+    }
   })
   .then(data => {
     console.log("chart::generated");
