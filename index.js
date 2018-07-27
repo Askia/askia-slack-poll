@@ -1,15 +1,31 @@
 const request    = require('request');
 const express    = require('express');
 const bodyParser = require('body-parser');
-const app        = express();
 const parser     = require('./src/parser');
 const db         = require('./src/db');
+const Chart      = require('chartjs-node');
+
+const chart = new Chart(600, 600);
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
+app.get('/chart/:poll_id', (req, res) => {
+  const poll = db.get(parseInt(req.params.poll_id, 10));
+
+  console.log(poll);
+
+  chart.drawChart({
+      type: 'bar',
+      data: poll.responses.map(x => x.votes)
+  })
+  .then(data => {
+    res.contentType('image/jpeg');
+    res.end(data.getImageBuffer('image/png'), 'binary');
+  });
+});
 
 app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
   res.status(200).end();
@@ -50,12 +66,18 @@ app.post(
   ({body: {payload, response_url}}, res) => {
     res.status(200).end();
 
-    const data = JSON.parse(payload);
+    const data   = JSON.parse(payload);
+    const match  = /askia_poll_([\d+])/.exec(callback_id);
 
-    sendMessageToSlackResponseURL(data.response_url, {
-      "text": data.user.name +" clicked: "+ data.actions[0].name,
-      "replace_original": true
-    });
+    if (match) {
+      const pollId = parseInt(match[1], 10);
+
+      sendMessageToSlackResponseURL(data.response_url, {
+        "text": data.user.name + " clicked: " + data.actions[0].name,
+        "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}`,
+        "replace_original": true
+      });
+    }
   }
 )
 
