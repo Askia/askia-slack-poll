@@ -18,7 +18,7 @@ app.post('/post', ({body: {token, text, response_url}}, res) => {
     res.status(403).end('Access forbidden');
   }
   else {
-    const values = parser,parse(text);
+    const values = parser.parse(text);
 
     if (3 > values.length) {
       res.status(400).end('Not enough values found');
