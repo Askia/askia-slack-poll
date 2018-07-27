@@ -81,7 +81,7 @@ const polls = {
     question: values[0],
     responses: values
       .slice(1)
-      .reduce((xs, x, i) => [...xs, item(i + 1, text)], [])
+      .reduce((xs, x, i) => [...xs, item(i + 1, x)], [])
   })
 };
 
