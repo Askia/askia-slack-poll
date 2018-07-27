@@ -1,19 +1,17 @@
 /**
  * Minimalistic in-merory database for polls.
  */
-exports.polls = {
-  generate: (userId, values) => {
-    const data = [];
+exports.generate = (userId, values) => {
+  const data = [];
 
-    return add(data, {
-      id: seed++,
-      ownerId: userId,
-      question: values[0],
-      responses: values
-        .slice(1)
-        .reduce((xs, x, i) => [...xs, response(i + 1, x)], [])
-    })
-  }
+  return add(data, {
+    id: seed++,
+    ownerId: userId,
+    question: values[0],
+    responses: values
+      .slice(1)
+      .reduce((xs, x, i) => [...xs, response(i + 1, x)], [])
+  })
 };
 
 /**
