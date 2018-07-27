@@ -26,7 +26,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
 
     chart.drawChart({
       type: 'bar',
-      data: {
+      options: {
         labels: poll.responses.map(x => x.text),
         datasets: [
           {
@@ -40,22 +40,6 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
             data: poll.responses.map(x => x.votes)
           }
         ]
-      },
-      options: {
-        //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-        scaleBeginAtZero : true,
-
-        //Boolean - If there is a stroke on each bar
-        barShowStroke : true,
-
-        //Number - Pixel width of the bar stroke
-        barStrokeWidth : 2,
-
-        //Number - Spacing between each of the X value sets
-        barValueSpacing : 5,
-
-        //Number - Spacing between data sets within X values
-        barDatasetSpacing : 1
       }
     })
     .then(data => {
