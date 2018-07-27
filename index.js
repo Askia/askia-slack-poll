@@ -114,7 +114,7 @@ app.post(
       sendMessageToSlackResponseURL(data.response_url, {
         "text": data.user.name + " clicked: " + data.actions[0].name,
         "replace_original": true,
-        "attachements": [
+        "attachments": [
           {
             "fallback": "Poll result fallback",
             "title": "Poll result",
