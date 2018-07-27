@@ -25,22 +25,33 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
     const chart = new Chart(600, 600);
 
     chart.drawChart({
-      type: 'bar',
-      options: {},
+      type: 'horizontalBar',
       data: {
         labels: poll.responses.map(x => x.text),
         datasets: [
           {
             label: "PollChart",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
             data: poll.responses.map(x => x.votes)
           }
         ]
+      },
+      options: {
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false
+              }
+            }
+          ],
+          yAxes: [
+            {
+              gridLines: {
+                display: false
+              }
+            }
+          ]
+        }
       }
     }).then(() => chart.getImageBuffer('image/png'))
       .then(buffer => {
@@ -108,9 +119,13 @@ app.post(
 
     if (match) {
       const pollId = parseInt(match[1], 10);
+      const poll   = db.get(pollId);
 
       console.log('action::poll_id', pollId);
+      console.log('action::name', data.actions[0].name)
+      console.log('action::typeOf(name)', typeof data.actions[0].name)
 
+      poll.responses.find(x => x.name === data.actions[0].name)
       sendMessageToSlackResponseURL(data.response_url, {
         "text": data.user.name + " clicked: " + data.actions[0].name,
         "replace_original": true,
