@@ -21,6 +21,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
 
   if (poll !== null) {
     console.log("chart::poll::success", poll);
+    console.log("chart::votes", poll.responses.map(x => x.votes));
 
     const chart = new Chart(600, 600);
 
