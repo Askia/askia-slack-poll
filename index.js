@@ -3,7 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const parser     = require('./src/parser');
 const db         = require('./src/db');
-const Chart      = require('node-chartjs');
+const Chart      = require('chartjs-node');
 
 const app = express();
 
