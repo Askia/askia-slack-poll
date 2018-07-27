@@ -4,7 +4,7 @@ const polls = new Map();
  * Minimalistic in-merory database for polls.
  */
 exports.generate = (userId, values) => {
-  const id   = seed++;
+  const id   = ++seed;
   const data = [];
   const poll = add(data, {
     id,
