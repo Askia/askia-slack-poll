@@ -1,18 +1,26 @@
+const polls = new Map();
+
 /**
  * Minimalistic in-merory database for polls.
  */
 exports.generate = (userId, values) => {
+  const id   = seed++;
   const data = [];
-
-  return add(data, {
-    id: seed++,
+  const poll = add(data, {
+    id,
     ownerId: userId,
     question: values[0],
     responses: values
       .slice(1)
       .reduce((xs, x, i) => [...xs, response(i + 1, x)], [])
-  })
+  });
+
+  polls.set(id, poll);
+
+  return poll;
 };
+
+exports.get = pollId => polls.get(pollId);
 
 /**
  * Creates a response entry.
@@ -23,6 +31,7 @@ const response = (id, text, type = "button") => ({
   "type": "button",
   "name": id,
   "value": id,
+  "count": 0,
   text
 });
 
