@@ -5,7 +5,6 @@ const parser     = require('./src/parser');
 const db         = require('./src/db');
 const Chart      = require('chartjs-node');
 
-const chart = new Chart(600, 600);
 const app = express();
 
 app.use(bodyParser.json());
@@ -13,22 +12,66 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
 app.get('/chart/:poll_id/poll.png', (req, res) => {
-  const poll = db.get(parseInt(req.params.poll_id, 10));
+  console.log("chart::poll_id", req.params.poll_id);
 
-  console.log("chart::poll", poll);
+  const id   = parseInt(req.params.poll_id, 10)
+  const poll = Number.isNaN()
+    ? null
+    : db.get(id);
 
-  chart.drawChart({
-    options: {
-        type: 'bar',
-        data: poll.responses.map(x => x.votes)
-    }
-  })
-  .then(data => {
-    console.log("chart::generated");
+  if (poll !== null) {
+    console.log("chart::poll::success", poll);
 
-    res.contentType('image/jpeg');
-    res.end(chart.getImageBuffer('image/png'), 'binary');
-  });
+    const chart = new Chart(600, 600);
+
+    chart.drawChart({
+      type: 'bar',
+      data: {
+        labels: poll.responses.map(x => x.text),
+        datasets: [
+          {
+            label: "PollChart",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: poll.responses.map(x => x.votes)
+          }
+        ]
+      },
+      options: {
+        //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+        scaleBeginAtZero : true,
+
+        //Boolean - If there is a stroke on each bar
+        barShowStroke : true,
+
+        //Number - Pixel width of the bar stroke
+        barStrokeWidth : 2,
+
+        //Number - Spacing between each of the X value sets
+        barValueSpacing : 5,
+
+        //Number - Spacing between data sets within X values
+        barDatasetSpacing : 1
+      }
+    })
+    .then(data => {
+      console.log("chart::generated");
+
+      res.status(200);
+      res.contentType('image/jpeg');
+      res.end(chart.getImageBuffer('image/png'), 'binary');
+    })
+    .then(data => {
+      chart.destroy();
+    });
+  }
+  else {
+    res.status(404).end();
+  }
 });
 
 app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
