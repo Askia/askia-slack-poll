@@ -47,7 +47,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
         console.log("chart::generated");
 
         res.status(200);
-        res.contentType('image/jpeg');
+        res.contentType('image/png');
         res.end(buffer, 'binary');
       })
       .then(() => chart.destroy())
@@ -113,8 +113,14 @@ app.post(
 
       sendMessageToSlackResponseURL(data.response_url, {
         "text": data.user.name + " clicked: " + data.actions[0].name,
-        "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}/poll.png`,
-        "replace_original": true
+        "replace_original": true,
+        "attachements": [
+          {
+            "fallback": "Poll result fallback",
+            "title": "Poll result",
+            "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}/poll.png`,
+          }
+        ]
       });
     }
   }
