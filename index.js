@@ -67,10 +67,14 @@ app.post(
     res.status(200).end();
 
     const data   = JSON.parse(payload);
-    const match  = /askia_poll_([\d+])/.exec(callback_id);
+    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
+
+    console.log('action::callback_id', data.callback_id);
 
     if (match) {
       const pollId = parseInt(match[1], 10);
+
+      console.log('action::poll_id', pollId);
 
       sendMessageToSlackResponseURL(data.response_url, {
         "text": data.user.name + " clicked: " + data.actions[0].name,
