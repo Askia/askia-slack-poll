@@ -48,6 +48,9 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
             {
               gridLines: {
                 display: false
+              },
+              ticks: {
+                beginAtZero: true
               }
             }
           ]
@@ -118,16 +121,16 @@ app.post(
     console.log('action::callback_id', data.callback_id);
 
     if (match) {
-      const pollId = parseInt(match[1], 10);
-      const poll   = db.get(pollId);
+      const pollId   = parseInt(match[1], 10);
+      const poll     = db.get(pollId);
+      const actionId = parseInt(data.actions[0].name, 10);
+      const response =  poll.responses.find(x => x.name === actionId);
 
-      console.log('action::poll_id', pollId);
-      console.log('action::name', data.actions[0].name)
-      console.log('action::typeOf(name)', typeof data.actions[0].name)
+      response.votes += 1;
+      console.log('action::response', response);
 
-      poll.responses.find(x => x.name === data.actions[0].name)
       sendMessageToSlackResponseURL(data.response_url, {
-        "text": data.user.name + " clicked: " + data.actions[0].name,
+        "text": data.user.name + " clicked: " + response.text,
         "replace_original": true,
         "attachments": [
           {
