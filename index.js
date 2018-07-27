@@ -12,18 +12,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
-app.get('/chart/:poll_id', (req, res) => {
+app.get('/chart/:poll_id/poll.png', (req, res) => {
   const poll = db.get(parseInt(req.params.poll_id, 10));
 
-  console.log(poll);
+  console.log("chart::poll", poll);
 
   chart.drawChart({
       type: 'bar',
       data: poll.responses.map(x => x.votes)
   })
   .then(data => {
+    console.log("chart::generated");
+
     res.contentType('image/jpeg');
-    res.end(data.getImageBuffer('image/png'), 'binary');
+    res.end(chart.getImageBuffer('image/png'), 'binary');
   });
 });
 
@@ -78,7 +80,7 @@ app.post(
 
       sendMessageToSlackResponseURL(data.response_url, {
         "text": data.user.name + " clicked: " + data.actions[0].name,
-        "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}`,
+        "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}/poll.png`,
         "replace_original": true
       });
     }
