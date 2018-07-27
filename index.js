@@ -2,7 +2,7 @@ const request    = require('request');
 const express    = require('express');
 const bodyParser = require('body-parser');
 const app        = express();
-const parser     = require('./src/text-parser');
+const parser     = require('./src/parser');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
