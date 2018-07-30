@@ -10,26 +10,26 @@ exports.generate = xs => {
     // Draw percentage bar
     roundRect({
       ctx,
-      x: 5,
-      y: (barHeight + barVMargin) * i + barVMargin,
-      width: y.percent / 100 * barWidth,
-      height: barHeight,
-      bgColor: barBgColor,
+      x       : 5,
+      y       : (barHeight + barVMargin) * i + barVMargin,
+      width   : y.percent / 100 * barWidth,
+      height  : barHeight,
+      bgColor : barBgColor,
       bdRadius: 3,
-      bdColor: transparent
+      bdColor : transparent
     });
     // Draw full bar
     roundRect({
-      x: 5,
-      y: (barHeight + barVMargin) * i + barVMargin,
-      width: barWidth,
-      height: barHeight,
-      bgColor: transparent,
+      x       : 5,
+      y       : (barHeight + barVMargin) * i + barVMargin,
+      width   : barWidth,
+      height  : barHeight,
+      bgColor : transparent,
       bdRadius: 3,
-      bdColor: barBdColor
+      bdColor : barBdColor
     });
 
-    ctx.font      = `${fontSize}px Arial`
+    ctx.font      = `${fontSize}px Arial`;
     ctx.fillStyle = fontColor;
     ctx.fillText(
       `${y.text} - ${y.percent.toFixed(1)}%`,
@@ -119,16 +119,16 @@ const roundRect = ({
   );
   ctx.closePath();
 
-  if (fill !== 'transparent') {
-    ctx.fillStyle = fill;
+  if (bgColor !== 'transparent') {
+    ctx.fillStyle = bgColor;
     ctx.fill();
   }
 
-  if (stroke !== 'transparent') {
-    ctx.strokeStyle = stroke;
+  if (bdColor !== 'transparent') {
+    ctx.strokeStyle = bdColor;
     ctx.stroke();
   }
-}
+};
 
 /**
  * Specifies the slack max width before it modifies

@@ -1,4 +1,4 @@
-exports.parse = cs => fold(cs, sum, [])
+exports.parse = cs => fold(cs, sum, []);
 
 /**
  * Folds a text `cs` to an array of strings matching

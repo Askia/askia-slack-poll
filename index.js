@@ -14,7 +14,7 @@ app.get('/', (req, res) => res.send('It works!'));
 app.get('/chart/:poll_id/poll.png', (req, res) => {
   console.log("chart::poll_id", req.params.poll_id);
 
-  const id   = parseInt(req.params.poll_id, 10)
+  const id   = parseInt(req.params.poll_id, 10);
   const poll = Number.isNaN()
     ? null
     : db.get(id);
@@ -32,8 +32,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
         res.end(buffer, 'binary');
       })
       .catch(err => {
-        console.error("canvas::generate::failure", e);
-        chart.destroy();
+        console.error("canvas::generate::failure", err);
         res.status(500).end();
       });
   }
@@ -42,6 +41,7 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
   }
 });
 
+/* eslint-disable-next-line */
 app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
   res.status(200).end();
 
@@ -58,16 +58,16 @@ app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
     else {
       const poll = db.generate(user_id, values);
 
-      sendMessageToSlackResponseURL(response_url, {
-        "text": "This is your first interactive message",
+      slackMessage(response_url, {
+        "text"       : "This is your first interactive message",
         "attachments": [
           {
-            "text": poll.question,
-            "fallback": "Shame on you...",
-            "callback_id": `askia_poll_${poll.id}`,
-            "color": "#3AA3E3",
+            "text"           : poll.question,
+            "fallback"       : "Shame on you...",
+            "callback_id"    : `askia_poll_${poll.id}`,
+            "color"          : "#3AA3E3",
             "attachment_type": "default",
-            "actions": poll.responses
+            "actions"        : poll.responses
           }
         ]
       });
@@ -78,7 +78,7 @@ app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
 app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
-  ({body: {payload, response_url}}, res) => {
+  ({body: {payload}}, res) => {
     res.status(200).end();
 
     const data   = JSON.parse(payload);
@@ -95,34 +95,39 @@ app.post(
       response.votes += 1;
       console.log('action::response', response);
 
-      sendMessageToSlackResponseURL(data.response_url, {
-        "text": data.user.name + " clicked: " + response.text,
+      slackMessage(data.response_url, {
+        "text"            : `${data.user.name  } clicked: ${  response.text}`,
         "replace_original": true,
-        "attachments": [
+        "attachments"     : [
           {
-            "fallback": "Poll result fallback",
-            "title": "Poll result",
-            "image_url": `https://mighty-bayou-64992.herokuapp.com/chart/${pollId}/poll.png`,
+            "fallback" : "Poll result fallback",
+            "title"    : "Poll result",
+            "image_url": [
+              `https://mighty-bayou-64992.herokuapp.com`,
+              `chart`,
+              pollId,
+              `poll.png`
+            ].join('/')
           }
         ]
       });
     }
   }
-)
+);
 
 app.listen(app.get('port'), () => {
-  console.log('Node app is running on port', app.get('port'))
+  console.log('Node app is running on port', app.get('port'));
 });
 
 const postOptions = {
-  method: 'POST',
-  headers: {'Content-type': 'application/json'},
+  method : 'POST',
+  headers: {'Content-type': 'application/json'}
 };
 
-const sendMessageToSlackResponseURL = (uri, json) => {
-  request({...postOptions, uri, json}, (error, response, body) => {
-    if (error){
-
-    }
-  })
-}
+const slackMessage = (uri, json) =>
+  new Promise((resolve, reject) => request(
+    {...postOptions, uri, json},
+    (error, response, body) => error
+      ? reject(error)
+      : resolve({response, body})
+  ));

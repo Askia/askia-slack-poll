@@ -8,8 +8,8 @@ exports.generate = (userId, values) => {
   const data = [];
   const poll = add(data, {
     id,
-    ownerId: userId,
-    question: values[0],
+    ownerId  : userId,
+    question : values[0],
     responses: values
       .slice(1)
       .reduce((xs, x, i) => [...xs, response(i + 1, x)], [])
@@ -28,8 +28,8 @@ exports.get = pollId => polls.get(pollId);
  * @type {Int -> String -> SlackAttachmentType -> ResponseEntry}
  */
 const response = (id, text, type = "button") => ({
-  "type": "button",
-  "name": id,
+  "type" : type,
+  "name" : id,
   "value": id,
   "votes": 0,
   text
