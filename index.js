@@ -3,7 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const parser     = require('./src/parser');
 const db         = require('./src/db');
-const canvas     = require('./src/canvas');
+const canvas     = require('./src/chart');
 
 const app = express();
 

@@ -1,7 +1,7 @@
-const {createCanvas} = require('canvas');
+const cv = require('canvas');
 
 exports.generate = xs => {
-  const canvas    = createCanvas(350, 500);
+  const canvas    = cv.createCanvas(350, 500);
   const ctx       = canvas.getContext('2d');
   const userCount = xs.reduce((sum, x) => sum + x.votes, 0);
   const ys        = xs.map(x => ({...x, percent: x.votes / userCount * 100}));
