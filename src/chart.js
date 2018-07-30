@@ -20,6 +20,7 @@ exports.generate = xs => {
     });
     // Draw full bar
     roundRect({
+      ctx,
       x       : 5,
       y       : (barHeight + barVMargin) * i + barVMargin,
       width   : barWidth,
