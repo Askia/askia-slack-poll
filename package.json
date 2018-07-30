@@ -19,6 +19,7 @@
     "request": "^2.87.0"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.6",
     "eslint": "^5.2.0"
   }
 }
