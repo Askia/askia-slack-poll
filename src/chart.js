@@ -11,7 +11,7 @@ exports.generate = xs => {
     roundRect({
       ctx,
       x: 5,
-      y: (height + barVMargin) * i + barVMargin,
+      y: (barHeight + barVMargin) * i + barVMargin,
       width: y.percent / 100 * barWidth,
       height: barHeight,
       bgColor: barBgColor,
@@ -21,7 +21,7 @@ exports.generate = xs => {
     // Draw full bar
     roundRect({
       x: 5,
-      y: (height + barVMargin) * i + barVMargin,
+      y: (barHeight + barVMargin) * i + barVMargin,
       width: barWidth,
       height: barHeight,
       bgColor: transparent,
