@@ -3,7 +3,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const parser     = require('./src/parser');
 const db         = require('./src/db');
-const Chart      = require('chartjs-node');
+const canvas     = require('./src/canvas');
 
 const app = express();
 
@@ -23,70 +23,16 @@ app.get('/chart/:poll_id/poll.png', (req, res) => {
     console.log("chart::poll::success", poll);
     console.log("chart::votes", poll.responses.map(x => x.votes));
 
-    const chart = new Chart(600, 600);
-    const data  = poll.responses.map(x => x.votes);
-    const max   = Math.max(poll.responses)
-    chart.drawChart({
-      type: 'horizontalBar',
-      data: {
-        labels: poll.responses.map(x => x.text),
-        datasets: [
-          {
-            data,
-            label: "PollChart",
-            backgroundColor:'rgba(205,85,85,.5)',
-            borderColor: 'rgba(140,12,12,1)',
-            borderWidth: 2
-          },
-          {
-              label: '# of Votes',
-              data: Array.from(poll.responses, () => max),
-              backgroundColor:'rgba(205,85,85,0)',
-              borderColor: 'rgba(140,12,12,1)',
-              borderWidth: 2,
-          }
-        ]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-        scales: {
-          xAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-                drawBorder: false
-              }
-            }
-          ],
-          yAxes: [
-            {
-              stacked: true,
-              ticks: {
-                beginAtZero: true,
-                mirror: true
-              },
-              gridLines: {
-                display: false,
-                drawBorder: false
-              }
-            }
-          ]
-        }
-      }
-    }).then(() => chart.getImageBuffer('image/png'))
+    canvas.generate(poll.responses)
       .then(buffer => {
-        console.log("chart::generated");
+        console.log("canvas::generate::success");
 
         res.status(200);
         res.contentType('image/png');
         res.end(buffer, 'binary');
       })
-      .then(() => chart.destroy())
-      .catch(e => {
-        console.error(e);
+      .catch(err => {
+        console.error("canvas::generate::failure", e);
         chart.destroy();
         res.status(500).end();
       });
