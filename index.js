@@ -63,8 +63,9 @@ app.post(
 
         slackMessage('https://slack.com/api/chat.postMessage', {
           token,
-          channel      : channel_id,
+          "channel"    : channel_id,
           "text"       : `*${poll.question}*`,
+          "as_user"    : true,
           "attachments": [
             {
               "fallback"   : "Cannot display the question",
