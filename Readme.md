@@ -26,7 +26,9 @@
    - `node: 10.7.0`
    - `npm: 6.2.0`
 
-2. Install native depencies for `node-canvas`. Informations about dependencies to install can be found at https://github.com/Automattic/node-canvas#compiling
+2. Install native depencies for `node-canvas`. Informations about dependencies
+   to install can be found at:
+   https://github.com/Automattic/node-canvas#compiling
 
 3. Clone the repository on your server.
 
