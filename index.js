@@ -147,7 +147,9 @@ app.listen(app.get('port'), () => {
 
 const postOptions = {
   method : 'POST',
-  headers: {'Content-type': 'application/json'}
+  headers: {
+    'Content-type': 'application/json; charset=utf-8'
+  }
 };
 
 const slackMessage = (uri, json) =>
