@@ -34,38 +34,47 @@ app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
 });
 
 /* eslint-disable-next-line */
-app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
-  res.status(200).end();
+app.post(
+  '/post',
+  ({body: {token, user_id, text, response_url}}, res) => {
+    res.status(200).end();
 
-  if (token !== process.env.SLACK_APP_TOKEN) {
-    console.error('Invalid token', token);
-    res.status(403).end('Access forbidden');
-  }
-  else {
-    const values = parser.parse(text);
-
-    if (3 > values.length) {
-      res.status(400).end('Not enough values found');
+    if (token !== process.env.SLACK_APP_TOKEN) {
+      console.error('Invalid token', token);
+      res.status(403).end('Access forbidden');
     }
     else {
-      const poll = db.generate(user_id, values);
+      const values = parser.parse(text);
 
-      slackMessage(response_url, {
-        "text"         : poll.question,
-        "response_type": "in_channel",
-        "attachments"  : [
-          {
-            "fallback"       : "Shame on you...",
-            "callback_id"    : `askia_poll_${poll.id}`,
-            "color"          : "#3AA3E3",
-            "attachment_type": "default",
-            "actions"        : poll.responses
-          }
-        ]
-      });
+      if (3 > values.length) {
+        res.status(400).end('Not enough values found');
+      }
+      else {
+        const poll = db.generate(user_id, values);
+
+        slackMessage(response_url, {
+          "text"         : poll.question,
+          "response_type": "in_channel",
+          "attachments"  : [
+            {
+              "fallback"   : "Cannot display the question",
+              "callback_id": `askia_poll_question_${poll.id}`,
+              "color"      : "#3AA3E3"
+            }
+          ]
+        });
+        slackMessage(response_url, {
+          "text"           : poll.question,
+          "response_type"  : "ephemeral",
+          "fallback"       : "Cannot display the responses",
+          "callback_id"    : `askia_poll_responses_${poll.id}`,
+          "color"          : "#3AA3E3",
+          "attachment_type": "default",
+          "actions"        : poll.responses
+        });
+      }
     }
-  }
-});
+  });
 
 app.post(
   '/actions',
@@ -74,7 +83,7 @@ app.post(
     res.status(200).end();
 
     const data   = JSON.parse(payload);
-    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
+    const match  = /askia_poll_responses_$([\d+])/.exec(data.callback_id);
 
     if (match) {
       const pollId   = parseInt(match[1], 10);
@@ -88,7 +97,7 @@ app.post(
         "replace_original": true,
         "attachments"     : [
           {
-            "fallback" : "Poll result fallback",
+            "fallback" : "Cannot display poll result",
             "title"    : "Poll result",
             "image_url": [
               `https://mighty-bayou-64992.herokuapp.com`,
