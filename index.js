@@ -35,15 +35,12 @@ app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
   }
 });
 
-/* eslint-disable-next-line */
 app.post(
   '/post',
-  ({body}, res) => {
-    const {token, user_id, text, response_url, channel_id} = body;
-    console.log(body)
+  /* eslint-disable-next-line */
+  ({body:{token, user_id, text, response_url, channel_id}}, res) => {
     res.status(200).end();
-    // console.log('post::body', body);
-    console.log('SLACK_APP_OAUTH', process.env.SLACK_APP_OAUTH);
+
     if (token !== process.env.SLACK_APP_TOKEN) {
       console.error('Invalid token', token);
       res.status(403).end('Access forbidden');
@@ -64,8 +61,9 @@ app.post(
         console.log("poll::generate", poll);
 
         web.chat.postMessage({
+          /* eslint-disable-next-line */
           "channel"    : channel_id,
-          "text"       : `*${poll.question}*`,
+          "text"       : poll.question,
           "attachments": [
             {
               "fallback"   : "Cannot display the question",
@@ -102,8 +100,6 @@ app.post(
     const data   = JSON.parse(payload);
     const match  = /askia_poll_responses_([\d+])/.exec(data.callback_id);
 
-    console.log("action:callback_id", data.callback_id);
-
     if (match) {
       const pollId   = parseInt(match[1], 10);
       const poll     = db.get(pollId);
@@ -112,10 +108,13 @@ app.post(
 
       response.votes += 1;
 
-      console.log(payload);
-      web.chat.update({
+      web.chat.delete({
+        "channel": poll.channelId,
+        "ts"     : payload.message_ts
+      }).then(() => web.chat.update({
         "channel"    : poll.channelId,
         "ts"         : poll.ts,
+        "text"       : poll.question,
         "attachments": [
           {
             "fallback" : "Cannot display poll result",
@@ -130,36 +129,18 @@ app.post(
             ].join('/')
           }
         ]
-      });
-      /*
-      slackMessage(data.response_url, {
-        "replace_original": true,
-        "attachments"     : [
-          {
-            "fallback" : "Cannot display poll result",
-            "title"    : "Poll result",
-            "image_url": [
-              `https://mighty-bayou-64992.herokuapp.com`,
-              `chart`,
-              poll.time,
-              response.votes,
-              pollId,
-              `poll.png`
-            ].join('/')
-          }
-        ]
-      }).catch(err => {
-        console.error("post::response::failure", err);
+      })).catch(err => {
+        console.error("actions::response::failure", err);
         res.status(500).end();
       });
-      */
     }
   }
 );
 
-app.listen(app.get('port'), () => {
-  console.log('Node app is running on port', app.get('port'));
-});
+app.listen(
+  app.get('port'),
+  () => console.log('listent::port', app.get('port'))
+);
 
 const postOptions = {
   method : 'POST',
