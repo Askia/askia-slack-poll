@@ -12,26 +12,19 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
-app.get('/chart/:poll_id/poll.png', (req, res) => {
-  console.log("chart::poll_id", req.params.poll_id);
-
+app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
   const id   = parseInt(req.params.poll_id, 10);
   const poll = Number.isNaN() ? null : db.get(id);
 
   if (poll !== null) {
-    console.log("chart::poll::success", poll);
-    console.log("chart::votes", poll.responses.map(x => x.votes));
-
     canvas.generate(poll.responses)
       .then(buffer => {
-        console.log("canvas::generate::success");
-
         res.status(200);
         res.contentType('image/png');
         res.end(buffer, 'binary');
       })
       .catch(err => {
-        console.error("canvas::generate::failure", err);
+        console.error("chart::generate::failure", err);
         res.status(500).end();
       });
   }
@@ -83,20 +76,15 @@ app.post(
     const data   = JSON.parse(payload);
     const match  = /askia_poll_([\d+])/.exec(data.callback_id);
 
-    console.log('action::callback_id', data.callback_id);
-
     if (match) {
       const pollId   = parseInt(match[1], 10);
       const poll     = db.get(pollId);
       const actionId = parseInt(data.actions[0].name, 10);
-      const response =  poll.responses.find(x => x.name === actionId);
+      const response = poll.responses.find(x => x.name === actionId);
 
       response.votes += 1;
-      console.log('action::response', response);
 
       slackMessage(data.response_url, {
-        "text"            : `${data.user.name  } clicked: ${  response.text}`,
-        "response_type"   : "in_channel",
         "replace_original": true,
         "attachments"     : [
           {
@@ -105,11 +93,16 @@ app.post(
             "image_url": [
               `https://mighty-bayou-64992.herokuapp.com`,
               `chart`,
+              poll.time,
+              response.votes,
               pollId,
               `poll.png`
             ].join('/')
           }
         ]
+      }).catch(err => {
+        console.error("post::response::failure", err);
+        res.status(500).end();
       });
     }
   }
