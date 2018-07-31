@@ -50,13 +50,18 @@ app.post(
         res.status(400).end('Not enough values found');
       }
       else {
-        const poll = db.generate(user_id, channel_id, values);
+        const poll = db.generate(
+          user_id,
+          channel_id,
+          values
+        );
 
         web.chat
           .postMessage({
             /* eslint-disable-next-line */
             "channel"    : channel_id,
             "text"       : poll.question,
+            "as_user"    : true,
             "attachments": [
               {
                 "fallback"   : "Cannot display the question",
@@ -107,10 +112,9 @@ app.post(
 
       response.votes += 1;
 
-      console.log("payload", payload);
       web.chat.delete({
         "channel": poll.channelId,
-        "ts"     : payload.message_ts
+        "ts"     : data.message_ts
       }).then(() => web.chat.update({
         "channel"    : poll.channelId,
         "ts"         : poll.ts,
