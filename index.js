@@ -39,8 +39,6 @@ app.post(
   '/post',
   /* eslint-disable-next-line */
   ({body:{token, user_id, text, response_url, channel_id}}, res) => {
-    res.status(200).end();
-
     if (token !== process.env.SLACK_APP_TOKEN) {
       console.error('Invalid token', token);
       res.status(403).end('Access forbidden');
@@ -52,42 +50,42 @@ app.post(
         res.status(400).end('Not enough values found');
       }
       else {
-        const poll = db.generate(
-          user_id,
-          channel_id,
-          values
-        );
+        const poll = db.generate(user_id, channel_id, values);
 
-        console.log("poll::generate", poll);
-
-        web.chat.postMessage({
-          /* eslint-disable-next-line */
-          "channel"    : channel_id,
-          "text"       : poll.question,
-          "as_user"    : true,
-          "attachments": [
-            {
-              "fallback"   : "Cannot display the question",
-              "callback_id": `askia_poll_question_${poll.id}`,
-              "color"      : "#3AA3E3"
-            }
-          ]
-        }).then(response => {
-          poll.ts = response.ts;
-
-          return slackMessage(response_url, {
-            "response_type": "ephemeral",
-            "attachments"  : [
+        web.chat
+          .postMessage({
+            /* eslint-disable-next-line */
+            "channel"    : channel_id,
+            "text"       : poll.question,
+            "attachments": [
               {
-                "fallback"       : "Cannot display the responses",
-                "callback_id"    : `askia_poll_responses_${poll.id}`,
-                "color"          : "#3AA3E3",
-                "attachment_type": "default",
-                "actions"        : poll.responses
+                "fallback"   : "Cannot display the question",
+                "callback_id": `askia_poll_question_${poll.id}`,
+                "color"      : "#3AA3E3"
               }
             ]
+          })
+          .then(response => {
+            poll.ts = response.ts;
+
+            return slackMessage(response_url, {
+              "response_type": "ephemeral",
+              "attachments"  : [
+                {
+                  "fallback"       : "Cannot display the responses",
+                  "callback_id"    : `askia_poll_responses_${poll.id}`,
+                  "color"          : "#3AA3E3",
+                  "attachment_type": "default",
+                  "actions"        : poll.responses
+                }
+              ]
+            });
+          })
+          .then(_ => res.status(200).end())
+          .catch(err => {
+            console.error("actions::response::failure", err);
+            res.status(500).end();
           });
-        });
       }
     }
   });
@@ -110,7 +108,6 @@ app.post(
       response.votes += 1;
 
       console.log("payload::message_ts", payload.message_ts);
-
       web.chat.delete({
         "channel": poll.channelId,
         "ts"     : payload.message_ts
