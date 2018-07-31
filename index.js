@@ -88,7 +88,7 @@ app.post(
     res.status(200).end();
 
     const data   = JSON.parse(payload);
-    const match  = /askia_poll_responses_$([\d+])/.exec(data.callback_id);
+    const match  = /askia_poll_responses_([\d+])/.exec(data.callback_id);
 
     console.log("action:callback_id", data.callback_id);
 
