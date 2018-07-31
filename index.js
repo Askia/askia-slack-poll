@@ -65,7 +65,7 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response', Object.keys(response));
+          console.log('question::response', response.response.body);
 
           return slackMessage(response_url, {
             "response_type": "ephemeral",
