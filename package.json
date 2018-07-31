@@ -13,6 +13,7 @@
     "node": "10.7.0"
   },
   "dependencies": {
+    "@slack/client": "^4.3.1",
     "body-parser": "^1.18.3",
     "canvas": "^1.6.11",
     "express": "^4.16.3",

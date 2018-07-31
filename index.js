@@ -1,10 +1,12 @@
-const request    = require('request');
-const express    = require('express');
-const bodyParser = require('body-parser');
-const parser     = require('./src/parser');
-const db         = require('./src/db');
-const canvas     = require('./src/chart');
+const request     = require('request');
+const express     = require('express');
+const bodyParser  = require('body-parser');
+const parser      = require('./src/parser');
+const db          = require('./src/db');
+const canvas      = require('./src/chart');
+const {WebClient} = require('@slack/client');
 
+const web = new WebClient(process.env.SLACK_APP_OAUTH);
 const app = express();
 
 app.use(bodyParser.json());
@@ -61,8 +63,7 @@ app.post(
 
         console.log("poll::generate", poll);
 
-        slackMessage('https://slack.com/api/chat.postMessage', {
-          "token"      : process.env.SLACK_APP_OAUTH,
+        web.chat.postMessage({
           "channel"    : channel_id,
           "text"       : `*${poll.question}*`,
           "attachments": [
@@ -73,20 +74,7 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response', response.body);
-
-          return slackMessage(response_url, {
-            "response_type": "ephemeral",
-            "attachments"  : [
-              {
-                "fallback"       : "Cannot display the responses",
-                "callback_id"    : `askia_poll_responses_${poll.id}`,
-                "color"          : "#3AA3E3",
-                "attachment_type": "default",
-                "actions"        : poll.responses
-              }
-            ]
-          });
+          console.log('question::response', response);
         });
       }
     }
