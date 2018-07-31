@@ -3,11 +3,12 @@ const polls = new Map();
 /**
  * Minimalistic in-merory database for polls.
  */
-exports.generate = (userId, values) => {
+exports.generate = (userId, channelId, values) => {
   const id   = ++seed;
   const data = [];
   const poll = add(data, {
     id,
+    channelId: channelId,
     time     : new Date().getTime(),
     ownerId  : userId,
     question : values[0],

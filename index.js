@@ -37,7 +37,7 @@ app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
 app.post(
   '/post',
   ({body}, res) => {
-    const {token, user_id, text, response_url} = body;
+    const {token, user_id, text, response_url, channel_id} = body;
     console.log(body)
     res.status(200).end();
     console.log('post::body', body);
@@ -53,14 +53,19 @@ app.post(
         res.status(400).end('Not enough values found');
       }
       else {
-        const poll = db.generate(user_id, values);
+        const poll = db.generate(
+          user_id,
+          channel_id,
+          values
+        );
 
         console.log("poll::generate", poll);
 
         slackMessage('https://slack.com/api/chat.postMessage', {
-          "text"         : `*${poll.question}*`,
-          "response_type": "in_channel",
-          "attachments"  : [
+          token,
+          channel      : channel_id,
+          "text"       : `*${poll.question}*`,
+          "attachments": [
             {
               "fallback"   : "Cannot display the question",
               "callback_id": `askia_poll_question_${poll.id}`,
@@ -68,7 +73,7 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response');
+          console.log('question::response', response);
 
           return slackMessage(response_url, {
             "response_type": "ephemeral",
