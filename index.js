@@ -58,8 +58,9 @@ app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
       const poll = db.generate(user_id, values);
 
       slackMessage(response_url, {
-        "text"       : poll.question,
-        "attachments": [
+        "text"         : poll.question,
+        "response_type": "in_channel",
+        "attachments"  : [
           {
             "fallback"       : "Shame on you...",
             "callback_id"    : `askia_poll_${poll.id}`,
