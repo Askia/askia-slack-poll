@@ -11,7 +11,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 9001));
-
 app.get('/', (req, res) => res.send('It works!'));
 app.get('/chart/:poll_id/poll.png', (req, res) => {
   console.log("chart::poll_id", req.params.poll_id);
@@ -115,6 +114,10 @@ app.post(
     }
   }
 );
+
+app.listen(app.get('port'), () => {
+  console.log('Node app is running on port', app.get('port'));
+});
 
 const postOptions = {
   method : 'POST',
