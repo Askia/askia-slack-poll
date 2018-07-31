@@ -38,7 +38,7 @@ app.post(
   '/post',
   ({body: {token, user_id, text, response_url, channel}}, res) => {
     res.status(200).end();
-    console.log('channel', channel)
+    console.log('channel', channel);
 
     if (token !== process.env.SLACK_APP_TOKEN) {
       console.error('Invalid token', token);
@@ -66,7 +66,7 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response', response.response);
+          console.log('question::response');
 
           return slackMessage(response_url, {
             "response_type": "ephemeral",
