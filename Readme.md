@@ -19,8 +19,7 @@
 
 # Server
 
-1. Install
-   Create a `unix` server:
+1. Create a `unix` server and install:
 
    - `yarn: 1.7.0`
    - `node: 10.7.0`
