@@ -116,7 +116,8 @@ app.post(
 
       slackMessage(data.response_url, {
         "replace_original": true,
-        "text"            : ''
+        "text"            : '',
+        "attachments"     : []
       }).then(() => web.chat.update({
         "channel"    : poll.channelId,
         "ts"         : poll.ts,
