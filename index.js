@@ -65,7 +65,6 @@ app.post(
           "token"      : process.env.SLACK_APP_OAUTH,
           "channel"    : channel_id,
           "text"       : `*${poll.question}*`,
-          "as_user"    : true,
           "attachments": [
             {
               "fallback"   : "Cannot display the question",
@@ -74,7 +73,7 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response', response);
+          console.log('question::response', response.body);
 
           return slackMessage(response_url, {
             "response_type": "ephemeral",
