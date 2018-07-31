@@ -58,10 +58,9 @@ app.post('/post', ({body: {token, user_id, text, response_url}}, res) => {
       const poll = db.generate(user_id, values);
 
       slackMessage(response_url, {
-        "text"       : "This is your first interactive message",
+        "text"       : poll.question,
         "attachments": [
           {
-            "text"           : poll.question,
             "fallback"       : "Shame on you...",
             "callback_id"    : `askia_poll_${poll.id}`,
             "color"          : "#3AA3E3",
