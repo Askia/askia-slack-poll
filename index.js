@@ -109,9 +109,6 @@ app.post(
 
       response.votes += 1;
 
-      console.log("payload::message_ts", data.message_ts);
-      console.log("payload::response_url", data.response_url);
-
       slackMessage(data.response_url, {
         "replace_original": true,
         "text"            : `You vote for ${response.text}`
