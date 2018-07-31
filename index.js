@@ -64,6 +64,7 @@ app.post(
           /* eslint-disable-next-line */
           "channel"    : channel_id,
           "text"       : poll.question,
+          "as_user"    : true,
           "attachments": [
             {
               "fallback"   : "Cannot display the question",
