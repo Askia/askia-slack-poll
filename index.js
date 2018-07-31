@@ -62,7 +62,7 @@ app.post(
         console.log("poll::generate", poll);
 
         slackMessage('https://slack.com/api/chat.postMessage', {
-          token,
+          "token"      : process.env.SLACK_APP_OAUTH,
           "channel"    : channel_id,
           "text"       : `*${poll.question}*`,
           "as_user"    : true,
