@@ -90,7 +90,7 @@ app.post(
     const data   = JSON.parse(payload);
     const match  = /askia_poll_responses_$([\d+])/.exec(data.callback_id);
 
-    console.log("action:response", match);
+    console.log("action:callback_id", data.callback_id);
 
     if (match) {
       const pollId   = parseInt(match[1], 10);
