@@ -107,7 +107,7 @@ app.post(
 
       response.votes += 1;
 
-      console.log("payload::message_ts", payload.message_ts);
+      console.log("payload", payload);
       web.chat.delete({
         "channel": poll.channelId,
         "ts"     : payload.message_ts
