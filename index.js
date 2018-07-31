@@ -40,8 +40,8 @@ app.post(
     const {token, user_id, text, response_url, channel_id} = body;
     console.log(body)
     res.status(200).end();
-    console.log('post::body', body);
-
+    // console.log('post::body', body);
+    console.log('SLACK_APP_OAUTH', process.env.SLACK_APP_OAUTH);
     if (token !== process.env.SLACK_APP_TOKEN) {
       console.error('Invalid token', token);
       res.status(403).end('Access forbidden');
