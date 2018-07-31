@@ -11,7 +11,6 @@ exports.generate = xs => {
   const ys        = xs.map(x => ({...x, percent: x.votes / userCount * 100}));
 
   ys.forEach((y, i) => {
-    // Draw percentage bar
     roundRect({
       ctx,
       x       : 5,
@@ -22,7 +21,6 @@ exports.generate = xs => {
       bdRadius: 3,
       bdColor : transparent
     });
-    // Draw full bar
     roundRect({
       ctx,
       x       : 5,
@@ -80,11 +78,13 @@ exports.generate = xs => {
  */
 const roundRect = ({
   ctx,
-  x = 0, y = 0,
-  width = 0, height = 0,
-  bgColor = transparent,
+  x        = 0,
+  y        = 0,
+  width    = 0,
+  height   = 0,
+  bgColor  = transparent,
   bdRadius = 5,
-  bdColor = transparent
+  bdColor  = transparent
 }) => {
   const radius = typeof bdRadius === 'number'
     ? {tl: bdRadius, tr: bdRadius, br: bdRadius, bl: bdRadius}
