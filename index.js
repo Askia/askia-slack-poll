@@ -53,7 +53,7 @@ app.post(
         const poll = db.generate(user_id, values);
 
         slackMessage(response_url, {
-          "text"         : poll.question,
+          "text"         : `*${poll.question}*`,
           "response_type": "in_channel",
           "attachments"  : [
             {
@@ -96,6 +96,8 @@ app.post(
 
       response.votes += 1;
 
+      console.log(payload);
+      /*
       slackMessage(data.response_url, {
         "replace_original": true,
         "attachments"     : [
@@ -116,6 +118,7 @@ app.post(
         console.error("post::response::failure", err);
         res.status(500).end();
       });
+      */
     }
   }
 );
