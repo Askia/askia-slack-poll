@@ -43,15 +43,15 @@
    on Slack appliction interface. Go to `Basic Information` then scroll
    down to `App Credentials` and gets the `Verification Token` value.
 
-  ```
-  export SLACK_APP_TOKEN=xxxxxxxxxx
-  ```
+   ```
+   export SLACK_APP_TOKEN=xxxxxxxxxx
+   ```
 
 6. Set `SLACK_APP_SERVER` with the public DNS of your server.
 
-  ```
-  export SLACK_APP_SERVER=http://myappserver.com
-  ```
+   ```
+   export SLACK_APP_SERVER=http://myappserver.com
+   ```
 
 7. Go at the root level of your repository start the server
 
