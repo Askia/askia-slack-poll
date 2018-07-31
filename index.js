@@ -127,7 +127,7 @@ app.post(
               "fallback" : "Cannot display poll result",
               "title"    : "Poll result",
               "image_url": [
-                `https://mighty-bayou-64992.herokuapp.com`,
+                process.env.SLACK_APP_SERVER,
                 `chart`,
                 poll.time,
                 response.votes,
