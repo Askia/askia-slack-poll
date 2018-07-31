@@ -8,6 +8,7 @@ exports.generate = (userId, values) => {
   const data = [];
   const poll = add(data, {
     id,
+    time     : new Date().getTime(),
     ownerId  : userId,
     question : values[0],
     responses: values
@@ -20,6 +21,11 @@ exports.generate = (userId, values) => {
   return poll;
 };
 
+/**
+ * Gets a poll object by its unique identifier.
+ *
+ * @function {Int -> Poll}
+ */
 exports.get = pollId => polls.get(pollId);
 
 /**
