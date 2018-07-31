@@ -64,7 +64,7 @@ app.post(
           ]
         });
         slackMessage(response_url, {
-          "text"         : poll.question,
+          "text"         : "Click button to vote",
           "response_type": "ephemeral",
           "attachments"  : [
             {
