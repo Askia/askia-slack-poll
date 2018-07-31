@@ -39,8 +39,9 @@
    ```
 
 5. Set `SLACK_APP_TOKEN` environment variable with token that you can get
-   on Slack appliction interface. Go to `Basic Information` then scroll
-   down to `App Credentials` and gets the `Verification Token` value.
+   on your Slack application management interface. Go to `Basic Information`
+   then scroll down to `App Credentials` and gets the `Verification Token`
+   value.
 
    ```
    export SLACK_APP_TOKEN=xxxxxxxxxx
