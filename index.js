@@ -98,8 +98,6 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    res.status(200).end();
-
     const data   = JSON.parse(payload);
     const match  = /askia_poll_responses_([\d+])/.exec(data.callback_id);
 
@@ -117,25 +115,29 @@ app.post(
       slackMessage(data.response_url, {
         "replace_original": true,
         "text"            : `You vote for ${response.text}`
-      }).then(() => web.chat.update({
-        "channel"    : poll.channelId,
-        "ts"         : poll.ts,
-        "text"       : poll.question,
-        "attachments": [
-          {
-            "fallback" : "Cannot display poll result",
-            "title"    : "Poll result",
-            "image_url": [
-              `https://mighty-bayou-64992.herokuapp.com`,
-              `chart`,
-              poll.time,
-              response.votes,
-              pollId,
-              `poll.png`
-            ].join('/')
-          }
-        ]
-      })).catch(err => {
+      }).then(() => {
+        res.status(200).end();
+
+        return web.chat.update({
+          "channel"    : poll.channelId,
+          "ts"         : poll.ts,
+          "text"       : poll.question,
+          "attachments": [
+            {
+              "fallback" : "Cannot display poll result",
+              "title"    : "Poll result",
+              "image_url": [
+                `https://mighty-bayou-64992.herokuapp.com`,
+                `chart`,
+                poll.time,
+                response.votes,
+                pollId,
+                `poll.png`
+              ].join('/')
+            }
+          ]
+        });
+      }).catch(err => {
         console.error("actions::response::failure", err);
         res.status(500).end();
       });
