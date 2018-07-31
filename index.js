@@ -36,9 +36,11 @@ app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
 /* eslint-disable-next-line */
 app.post(
   '/post',
-  ({body: {token, user_id, text, response_url, channel}}, res) => {
+  ({body}, res) => {
+    const {token, user_id, text, response_url} = body;
+    console.log(body)
     res.status(200).end();
-    console.log('channel', channel);
+    console.log('post::body', body);
 
     if (token !== process.env.SLACK_APP_TOKEN) {
       console.error('Invalid token', token);
