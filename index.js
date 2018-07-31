@@ -1,10 +1,10 @@
 const request     = require('request');
 const express     = require('express');
 const bodyParser  = require('body-parser');
+const {WebClient} = require('@slack/client');
 const parser      = require('./src/parser');
 const db          = require('./src/db');
 const canvas      = require('./src/chart');
-const {WebClient} = require('@slack/client');
 
 const web = new WebClient(process.env.SLACK_APP_OAUTH);
 const app = express();
