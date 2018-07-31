@@ -9,15 +9,15 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
 app.set('port', (process.env.PORT || 9001));
+
 app.get('/', (req, res) => res.send('It works!'));
 app.get('/chart/:poll_id/poll.png', (req, res) => {
   console.log("chart::poll_id", req.params.poll_id);
 
   const id   = parseInt(req.params.poll_id, 10);
-  const poll = Number.isNaN()
-    ? null
-    : db.get(id);
+  const poll = Number.isNaN() ? null : db.get(id);
 
   if (poll !== null) {
     console.log("chart::poll::success", poll);
@@ -97,6 +97,7 @@ app.post(
 
       slackMessage(data.response_url, {
         "text"            : `${data.user.name  } clicked: ${  response.text}`,
+        "response_type"   : "in_channel",
         "replace_original": true,
         "attachments"     : [
           {
@@ -114,10 +115,6 @@ app.post(
     }
   }
 );
-
-app.listen(app.get('port'), () => {
-  console.log('Node app is running on port', app.get('port'));
-});
 
 const postOptions = {
   method : 'POST',
