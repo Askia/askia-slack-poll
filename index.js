@@ -61,7 +61,6 @@ app.post(
             /* eslint-disable-next-line */
             "channel"    : channel_id,
             "text"       : poll.question,
-            "as_user"    : true,
             "attachments": [
               {
                 "fallback"   : "Cannot display the question",
@@ -114,9 +113,9 @@ app.post(
 
       console.log("payload::message_ts", data.message_ts);
 
-      web.chat.delete({
-        "channel": poll.channelId,
-        "ts"     : data.message_ts
+      slackMessage(data.response_url, {
+        "replace_original": true,
+        "text"            : ''
       }).then(() => web.chat.update({
         "channel"    : poll.channelId,
         "ts"         : poll.ts,
