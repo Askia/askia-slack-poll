@@ -64,13 +64,17 @@ app.post(
           ]
         });
         slackMessage(response_url, {
-          "text"           : poll.question,
-          "response_type"  : "ephemeral",
-          "fallback"       : "Cannot display the responses",
-          "callback_id"    : `askia_poll_responses_${poll.id}`,
-          "color"          : "#3AA3E3",
-          "attachment_type": "default",
-          "actions"        : poll.responses
+          "text"         : poll.question,
+          "response_type": "ephemeral",
+          "attachments"  : [
+            {
+              "fallback"       : "Cannot display the responses",
+              "callback_id"    : `askia_poll_responses_${poll.id}`,
+              "color"          : "#3AA3E3",
+              "attachment_type": "default",
+              "actions"        : poll.responses
+            }
+          ]
         });
       }
     }
