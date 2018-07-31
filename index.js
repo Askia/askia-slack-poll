@@ -64,18 +64,21 @@ app.post(
               "color"      : "#3AA3E3"
             }
           ]
-        });
-        slackMessage(response_url, {
-          "response_type": "ephemeral",
-          "attachments"  : [
-            {
-              "fallback"       : "Cannot display the responses",
-              "callback_id"    : `askia_poll_responses_${poll.id}`,
-              "color"          : "#3AA3E3",
-              "attachment_type": "default",
-              "actions"        : poll.responses
-            }
-          ]
+        }).then(response => {
+          console.log('question::response', response);
+
+          return slackMessage(response_url, {
+            "response_type": "ephemeral",
+            "attachments"  : [
+              {
+                "fallback"       : "Cannot display the responses",
+                "callback_id"    : `askia_poll_responses_${poll.id}`,
+                "color"          : "#3AA3E3",
+                "attachment_type": "default",
+                "actions"        : poll.responses
+              }
+            ]
+          });
         });
       }
     }
@@ -101,6 +104,9 @@ app.post(
       response.votes += 1;
 
       console.log(payload);
+      slackMessage('https://slack.com/api/chat.update', {
+
+      });
       /*
       slackMessage(data.response_url, {
         "replace_original": true,
