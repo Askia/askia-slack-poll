@@ -74,7 +74,20 @@ app.post(
             }
           ]
         }).then(response => {
-          console.log('question::response', response);
+          poll.ts = response.ts;
+
+          return slackMessage(response_url, {
+            "response_type": "ephemeral",
+            "attachments"  : [
+              {
+                "fallback"       : "Cannot display the responses",
+                "callback_id"    : `askia_poll_responses_${poll.id}`,
+                "color"          : "#3AA3E3",
+                "attachment_type": "default",
+                "actions"        : poll.responses
+              }
+            ]
+          });
         });
       }
     }
@@ -100,8 +113,23 @@ app.post(
       response.votes += 1;
 
       console.log(payload);
-      slackMessage('https://slack.com/api/chat.update', {
-
+      web.chat.update({
+        "channel"    : poll.channelId,
+        "ts"         : poll.ts,
+        "attachments": [
+          {
+            "fallback" : "Cannot display poll result",
+            "title"    : "Poll result",
+            "image_url": [
+              `https://mighty-bayou-64992.herokuapp.com`,
+              `chart`,
+              poll.time,
+              response.votes,
+              pollId,
+              `poll.png`
+            ].join('/')
+          }
+        ]
       });
       /*
       slackMessage(data.response_url, {
