@@ -1,7 +1,11 @@
 const Canvas = require('canvas');
 
 exports.generate = xs => {
-  const canvas    = new Canvas(350, 500);
+  const canvas    = new Canvas(
+    350,
+    (barHeight + barVMargin) * xs.length + barVMargin
+  );
+
   const ctx       = canvas.getContext('2d');
   const userCount = xs.reduce((sum, x) => sum + x.votes, 0);
   const ys        = xs.map(x => ({...x, percent: x.votes / userCount * 100}));
@@ -154,7 +158,7 @@ const maxHeight = 500;
  */
 const transparent = 'transparent';
 
-const barWidth = 165;
+const barWidth = 340;
 const barHeight = 40;
 const barBdColor = "#000000";
 const barBgColor = "#FF0000";
