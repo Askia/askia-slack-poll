@@ -52,6 +52,8 @@ app.post(
       else {
         const poll = db.generate(user_id, values);
 
+        console.log("poll::generate", poll);
+
         slackMessage(response_url, {
           "text"         : `*${poll.question}*`,
           "response_type": "in_channel",
