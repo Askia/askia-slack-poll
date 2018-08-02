@@ -44,19 +44,20 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    const data     = JSON.parse(payload);
-    const match    = /askia_poll_([\d+])/.exec(data.callback_id);
-    const pollId   = match !== null ? parseInt(match[1], 10) : null;
+    /* eslint-disable-next-line */
+    const {actions: [action], response_url, callback_id} = JSON.parse(payload);
+    const match    = /askia_poll_([\d+])/.exec(callback_id);
+    const pollId   = match !== null ? parseInt(match[1], 10) : undefined;
     const poll     = db.get(pollId);
-    const actionId = parseInt(data.actions[0].name, 10);
-    const response = poll !== null
+    const actionId = parseInt(action.name, 10);
+    const response = poll !== undefined
       ? poll.responses.find(x => x.name === actionId)
-      : null;
+      : undefined;
 
-    if (response !== null) {
+    if (response !== undefined) {
       response.votes += 1;
 
-      slackMessage(data.response_url, pollMsg(poll, true))
+      slackMessage(response_url, pollMsg(poll, true))
         .then(_ => res.status(200).end())
         .catch(err => {
           log("Action failure", err);
@@ -90,12 +91,14 @@ const postOptions = {
  * @template a
  * @type {(String, Request) -> Promise a}
  */
-const slackMessage = (uri, json) => new Promise((res, rej) => request(
-  {...postOptions, uri, json},
-  (error, response, body) => error
-    ? rej(error)
-    : res({response, body})
-));
+const slackMessage = (uri, json) => new Promise((res, rej) =>
+  request(
+    {...postOptions, uri, json},
+    (error, response, body) => error
+      ? rej(error)
+      : res({response, body})
+  )
+);
 
 /**
  * Creates the slack poll request obje.
