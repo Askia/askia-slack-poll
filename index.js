@@ -123,7 +123,7 @@ const pollTpl = x => [
   ...x.responses
     .slice()
     .sort(sorter)
-    .map(y => `• \`${y.votes}\` ${y.text}\n`)
+    .map(y => `• ${y.text} \`${y.votes}\`\n`)
 ].join('\n');
 
 /**
