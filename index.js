@@ -1,11 +1,9 @@
-const request     = require('request');
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const {WebClient} = require('@slack/client');
-const parser      = require('./src/parser');
-const db          = require('./src/db');
+const request    = require('request');
+const express    = require('express');
+const bodyParser = require('body-parser');
+const parser     = require('./src/parser');
+const db         = require('./src/db');
 
-const web = new WebClient(process.env.SLACK_APP_OAUTH);
 const app = express();
 
 app.use(bodyParser.json());
@@ -19,7 +17,7 @@ app.post(
   /* eslint-disable-next-line */
   ({body:{token, user_id, text, response_url, channel_id}}, res) => {
     if (token !== process.env.SLACK_APP_TOKEN) {
-      console.error('Invalid token', token);
+      log('Invalid token', token);
       res.status(403).end('Access forbidden');
     }
     else {
@@ -35,9 +33,7 @@ app.post(
           values
         );
 
-        web.chat.postMessage({
-          /* eslint-disable-next-line */
-          "channel"    : channel_id,
+        slackMessage(response_url, {
           "text"       : poll.question,
           "attachments": [
             {
@@ -48,15 +44,15 @@ app.post(
               "actions"        : poll.responses
             }
           ]
-        }).then(response => (poll.ts = response.ts, response))
-          .then(_ => res.status(200).end())
+        }).then(_ => res.status(200).end())
           .catch(err => {
-            console.error("actions::response::failure", err);
+            log("actions::response::failure", err);
             res.status(500).end();
           });
       }
     }
-  });
+  }
+);
 
 app.post(
   '/actions',
@@ -75,42 +71,32 @@ app.post(
 
       slackMessage(data.response_url, {
         "replace_original": true,
-        "text"            : `You vote for ${response.text}`
-      }).then(() => {
-        res.status(200).end();
-
-        return web.chat.update({
-          "channel"    : poll.channelId,
-          "ts"         : poll.ts,
-          "text"       : poll.question,
-          "attachments": [
-            {
-              "fallback" : "Cannot display poll result",
-              "title"    : "Poll result",
-              "image_url": [
-                process.env.SLACK_APP_SERVER,
-                `chart`,
-                poll.time,
-                response.votes,
-                pollId,
-                `poll.png`
-              ].join('/')
-            }
-          ]
+        "text"            : poll.question,
+        "attachments"     : [
+          {
+            "fallback"       : "Cannot display the responses",
+            "callback_id"    : `askia_poll_${poll.id}`,
+            "color"          : "#3AA3E3",
+            "attachment_type": "default",
+            "actions"        : poll.responses.sort(sorter)
+          }
+        ]
+      }).then(_ => res.status(200).end())
+        .catch(err => {
+          log("Action failure", err);
+          res.status(500).end();
         });
-      }).catch(err => {
-        console.error("actions::response::failure", err);
-        res.status(500).end();
-      });
     }
   }
 );
 
-app.listen(
-  app.get('port'),
-  () => console.log('listent::port', app.get('port'))
-);
+app.listen(app.get('port'), () => log('listent::port', app.get('port')));
 
+/**
+ * Default post options used by {@link slackMessage}.
+ *
+ * @type {Request}
+ */
 const postOptions = {
   method : 'POST',
   headers: {
@@ -118,6 +104,13 @@ const postOptions = {
   }
 };
 
+/**
+ * Create a simple request to the Slack API which returns a `Promise`
+ * of the request response.
+ *
+ * @template a
+ * @type {(String, Request) -> Promise a}
+ */
 const slackMessage = (uri, json) =>
   new Promise((resolve, reject) => request(
     {...postOptions, uri, json},
@@ -125,3 +118,15 @@ const slackMessage = (uri, json) =>
       ? reject(error)
       : resolve({response, body})
   ));
+
+/**
+ * Sorter function for poll response items organized by votes.
+ *
+ * @type {(Response, Response) -> Int}
+ */
+const sorter = (x, y) => x.votes > y.votes ? 1 : 0;
+
+/**
+ * Shorthand to `console.log()`.
+ */
+const log = (...xs) => console.log(...xs);
