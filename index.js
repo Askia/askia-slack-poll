@@ -33,18 +33,8 @@ app.post(
           values
         );
 
-        slackMessage(response_url, {
-          "text"       : poll.question,
-          "attachments": [
-            {
-              "fallback"       : "Cannot display the responses",
-              "callback_id"    : `askia_poll_${poll.id}`,
-              "color"          : "#3AA3E3",
-              "attachment_type": "default",
-              "actions"        : poll.responses
-            }
-          ]
-        }).then(_ => res.status(200).end())
+        slackMessage(response_url, pollMsg(poll))
+          .then(_ => res.status(200).end())
           .catch(err => {
             log("actions::response::failure", err);
             res.status(500).end();
@@ -69,19 +59,8 @@ app.post(
 
       response.votes += 1;
 
-      slackMessage(data.response_url, {
-        "replace_original": true,
-        "text"            : poll.question,
-        "attachments"     : [
-          {
-            "fallback"       : "Cannot display the responses",
-            "callback_id"    : `askia_poll_${poll.id}`,
-            "color"          : "#3AA3E3",
-            "attachment_type": "default",
-            "actions"        : poll.responses.sort(sorter)
-          }
-        ]
-      }).then(_ => res.status(200).end())
+      slackMessage(data.response_url, pollMsg(poll, true))
+        .then(_ => res.status(200).end())
         .catch(err => {
           log("Action failure", err);
           res.status(500).end();
@@ -111,20 +90,53 @@ const postOptions = {
  * @template a
  * @type {(String, Request) -> Promise a}
  */
-const slackMessage = (uri, json) =>
-  new Promise((resolve, reject) => request(
-    {...postOptions, uri, json},
-    (error, response, body) => error
-      ? reject(error)
-      : resolve({response, body})
-  ));
+const slackMessage = (uri, json) => new Promise((res, rej) => request(
+  {...postOptions, uri, json},
+  (error, response, body) => error
+    ? rej(error)
+    : res({response, body})
+));
+
+/**
+ * Creates the poll message.
+ *
+ * @type {Poll -> SlackRequest}
+ */
+const pollMsg = (x, replaceOrignal = false) => ({
+  "replace_original": replaceOrignal,
+  "text"            : pollTpl(x),
+  "attachments"     : [
+    {
+      "fallback"       : "Cannot display the responses",
+      "callback_id"    : `askia_poll_${x.id}`,
+      "color"          : "#3AA3E3",
+      "attachment_type": "default",
+      "actions"        : x.responses.sort(sorter)
+    }
+  ]
+});
+
+/**
+ * Creates the poll text message.
+ *
+ * @type {Poll -> String}
+ */
+const pollTpl = x => [
+  x.question,
+  '',
+  ...x.responses.map(y => `• \`${x.votes}\` ${y.text}\n`)
+].join('\n');
 
 /**
  * Sorter function for poll response items organized by votes.
  *
  * @type {(Response, Response) -> Int}
  */
-const sorter = (x, y) => x.votes > y.votes ? 1 : 0;
+const sorter = (x, y) => {
+  if (x.votes > y.votes) return -1;
+  if (x.votes < y.votes) return +1;
+  return 0;
+};
 
 /**
  * Shorthand to `console.log()`.
