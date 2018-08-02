@@ -61,3 +61,27 @@
    ```
    yarn start
    ```
+
+# Heroku (Dev install)
+
+1. Download the Heroku CLI: https://devcenter.heroku.com/articles/heroku-cli
+
+2. Log in Heroku with the CLI
+
+   ```
+   heroku login
+   ```
+
+3. Clone the repository
+
+4. Make some change on the project
+
+5. Push changes to heroku
+
+   ```
+   git push heroku master
+   ```
+
+   Note that it's not pushing changes to the git master branch but to the
+   heroku master branch. So, if you want to push your change to the git
+   repository use usual git commands.
