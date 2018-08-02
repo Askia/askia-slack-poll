@@ -99,15 +99,15 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
  * @type {Poll -> SlackRequest}
  */
 const pollMsg = (x, replaceOrignal = false) => ({
-  "response_type"   : "in_channel",
   "replace_original": replaceOrignal,
-  "icon_url"        : "https://www.askia.com/askia_bot_icon.png",
+  "response_type"   : "in_channel",
   "text"            : pollTpl(x),
   "attachments"     : [
     {
       "fallback"       : "Cannot display the responses",
       "callback_id"    : `askia_poll_${x.id}`,
       "color"          : "#283B49",
+      "icon_url"       : "https://www.askia.com/askia_bot_icon.png",
       "attachment_type": "default",
       "actions"        : x.responses
     }
