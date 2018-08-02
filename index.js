@@ -24,7 +24,7 @@ app.post(
       const xs = parser.parse(text);
 
       if (3 > xs.length) {
-        res.status(400).end('Not enough values found');
+        res.status(400).end('Not enough values');
       }
       else {
         const poll = db.generate(user_id, channel_id, xs);
@@ -44,15 +44,16 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    const data   = JSON.parse(payload);
-    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
+    const data     = JSON.parse(payload);
+    const match    = /askia_poll_([\d+])/.exec(data.callback_id);
+    const pollId   = match !== null ? parseInt(match[1], 10) : null;
+    const poll     = db.get(pollId);
+    const actionId = parseInt(data.actions[0].name, 10);
+    const response = poll !== null
+      ? poll.responses.find(x => x.name === actionId)
+      : null;
 
-    if (match) {
-      const pollId   = parseInt(match[1], 10);
-      const poll     = db.get(pollId);
-      const actionId = parseInt(data.actions[0].name, 10);
-      const response = poll.responses.find(x => x.name === actionId);
-
+    if (response !== null) {
       response.votes += 1;
 
       slackMessage(data.response_url, pollMsg(poll, true))
@@ -61,6 +62,9 @@ app.post(
           log("Action failure", err);
           res.status(500).end();
         });
+    }
+    else {
+      res.status(404).end();
     }
   }
 );
