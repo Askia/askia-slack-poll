@@ -76,7 +76,7 @@
 
 4. Make some change on the project
 
-5. Push changes to heroku
+5. Push changes to heroku to update your server application
 
    ```
    git push heroku master
