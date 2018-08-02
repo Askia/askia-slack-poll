@@ -21,22 +21,18 @@ app.post(
       res.status(403).end('Access forbidden');
     }
     else {
-      const values = parser.parse(text);
+      const xs = parser.parse(text);
 
-      if (3 > values.length) {
+      if (3 > xs.length) {
         res.status(400).end('Not enough values found');
       }
       else {
-        const poll = db.generate(
-          user_id,
-          channel_id,
-          values
-        );
+        const poll = db.generate(user_id, channel_id, xs);
 
         slackMessage(response_url, pollMsg(poll))
           .then(_ => res.status(200).end())
           .catch(err => {
-            log("actions::response::failure", err);
+            log("Post failure", err);
             res.status(500).end();
           });
       }
@@ -98,7 +94,7 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
 ));
 
 /**
- * Creates the poll message.
+ * Creates the slack poll request obje.
  *
  * @type {Poll -> SlackRequest}
  */
