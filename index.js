@@ -44,23 +44,28 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    const data   = JSON.parse(payload);
-    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
+    /* eslint-disable-next-line */
+    const {actions: [action], callback_id, response_url} = JSON.parse(payload);
+    const match    = /askia_poll_([\d+])/.exec(callback_id);
+    const pollId   = match !== null ? parseInt(match[1], 10) : undefined;
+    const poll     = db.get(pollId);
+    const actionId = parseInt(action.name, 10);
+    const response = poll !== undefined
+      ? poll.responses.find(x => x.name === actionId)
+      : undefined;
 
-    if (match) {
-      const pollId   = parseInt(match[1], 10);
-      const poll     = db.get(pollId);
-      const actionId = parseInt(data.actions[0].name, 10);
-      const response = poll.responses.find(x => x.name === actionId);
-
+    if (response !== undefined) {
       response.votes += 1;
 
-      slackMessage(data.response_url, pollMsg(poll, true))
+      slackMessage(response_url, pollMsg(poll, true))
         .then(_ => res.status(200).end())
         .catch(err => {
           log("Action failure", err);
           res.status(500).end();
         });
+    }
+    else {
+      res.status(404).end('Poll does not exist anymore');
     }
   }
 );
@@ -101,7 +106,6 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
 const pollMsg = (x, replaceOrignal = false) => ({
   "response_type"   : "in_channel",
   "replace_original": replaceOrignal,
-  "icon_url"        : "https://www.askia.com/askia_bot_icon.png",
   "text"            : pollTpl(x),
   "attachments"     : [
     {
