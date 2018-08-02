@@ -65,7 +65,7 @@ app.post(
   }
 );
 
-app.listen(app.get('port'), () => log('listent::port', app.get('port')));
+app.listen(app.get('port'), () => log('Listen port', app.get('port')));
 
 /**
  * Default post options used by {@link slackMessage}.
@@ -107,7 +107,7 @@ const pollMsg = (x, replaceOrignal = false) => ({
       "callback_id"    : `askia_poll_${x.id}`,
       "color"          : "#3AA3E3",
       "attachment_type": "default",
-      "actions"        : x.responses.sort(sorter)
+      "actions"        : x.responses
     }
   ]
 });
@@ -120,7 +120,10 @@ const pollMsg = (x, replaceOrignal = false) => ({
 const pollTpl = x => [
   x.question,
   '',
-  ...x.responses.map(y => `• \`${x.votes}\` ${y.text}\n`)
+  ...x.responses
+    .slice()
+    .sort(sorter)
+    .map(y => `• \`${y.votes}\` ${y.text}\n`)
 ].join('\n');
 
 /**
