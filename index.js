@@ -24,12 +24,10 @@ app.post(
       const xs = parser.parse(text);
 
       if (3 > xs.length) {
-        res.status(400).end('Not enough values');
+        res.status(400).end('Not enough values found');
       }
       else {
         const poll = db.generate(user_id, channel_id, xs);
-
-        console.log('poll', poll);
 
         slackMessage(response_url, pollMsg(poll))
           .then(_ => res.status(200).end())
@@ -46,30 +44,23 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    /* eslint-disable-next-line */
-    const {actions: [action], response_url, callback_id} = JSON.parse(payload);
-    const match    = /askia_poll_([\d+])/.exec(callback_id);
-    const pollId   = match !== null ? parseInt(match[1], 10) : undefined;
-    const poll     = db.get(pollId);
-    const actionId = parseInt(action.name, 10);
-    const response = poll !== undefined
-      ? poll.responses.find(x => x.name === actionId)
-      : undefined;
+    const data   = JSON.parse(payload);
+    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
 
-    console.log('values', pollId, actionId, action.name);
+    if (match) {
+      const pollId   = parseInt(match[1], 10);
+      const poll     = db.get(pollId);
+      const actionId = parseInt(data.actions[0].name, 10);
+      const response = poll.responses.find(x => x.name === actionId);
 
-    if (response !== undefined) {
       response.votes += 1;
 
-      slackMessage(response_url, pollMsg(poll, true))
+      slackMessage(data.response_url, pollMsg(poll, true))
         .then(_ => res.status(200).end())
         .catch(err => {
           log("Action failure", err);
           res.status(500).end();
         });
-    }
-    else {
-      res.status(404).end();
     }
   }
 );
@@ -95,14 +86,12 @@ const postOptions = {
  * @template a
  * @type {(String, Request) -> Promise a}
  */
-const slackMessage = (uri, json) => new Promise((res, rej) =>
-  request(
-    {...postOptions, uri, json},
-    (error, response, body) => error
-      ? rej(error)
-      : res({response, body})
-  )
-);
+const slackMessage = (uri, json) => new Promise((res, rej) => request(
+  {...postOptions, uri, json},
+  (error, response, body) => error
+    ? rej(error)
+    : res({response, body})
+));
 
 /**
  * Creates the slack poll request obje.
@@ -110,8 +99,9 @@ const slackMessage = (uri, json) => new Promise((res, rej) =>
  * @type {Poll -> SlackRequest}
  */
 const pollMsg = (x, replaceOrignal = false) => ({
-  "replace_original": replaceOrignal,
   "response_type"   : "in_channel",
+  "replace_original": replaceOrignal,
+  "icon_url"        : "https://www.askia.com/askia_bot_icon.png",
   "text"            : pollTpl(x),
   "attachments"     : [
     {
