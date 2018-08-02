@@ -79,6 +79,7 @@
 5. Push changes to heroku to update your server application
 
    ```
+   cd to/the/repo/folder   
    git push heroku master
    ```
 
