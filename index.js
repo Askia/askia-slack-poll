@@ -4,7 +4,6 @@ const bodyParser  = require('body-parser');
 const {WebClient} = require('@slack/client');
 const parser      = require('./src/parser');
 const db          = require('./src/db');
-const canvas      = require('./src/chart');
 
 const web = new WebClient(process.env.SLACK_APP_OAUTH);
 const app = express();
@@ -14,26 +13,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 9001));
 app.get('/', (req, res) => res.send('It works!'));
-app.get('/chart/:time/:votes/:poll_id/poll.png', (req, res) => {
-  const id   = parseInt(req.params.poll_id, 10);
-  const poll = Number.isNaN() ? null : db.get(id);
-
-  if (poll !== null) {
-    canvas.generate(poll.responses)
-      .then(buffer => {
-        res.status(200);
-        res.contentType('image/png');
-        res.end(buffer, 'binary');
-      })
-      .catch(err => {
-        console.error("chart::generate::failure", err);
-        res.status(500).end();
-      });
-  }
-  else {
-    res.status(404).end();
-  }
-});
 
 app.post(
   '/post',
@@ -56,35 +35,20 @@ app.post(
           values
         );
 
-        web.chat
-          .postMessage({
-            /* eslint-disable-next-line */
-            "channel"    : channel_id,
-            "text"       : poll.question,
-            "attachments": [
-              {
-                "fallback"   : "Cannot display the question",
-                "callback_id": `askia_poll_question_${poll.id}`,
-                "color"      : "#3AA3E3"
-              }
-            ]
-          })
-          .then(response => {
-            poll.ts = response.ts;
-
-            return slackMessage(response_url, {
-              "response_type": "ephemeral",
-              "attachments"  : [
-                {
-                  "fallback"       : "Cannot display the responses",
-                  "callback_id"    : `askia_poll_responses_${poll.id}`,
-                  "color"          : "#3AA3E3",
-                  "attachment_type": "default",
-                  "actions"        : poll.responses
-                }
-              ]
-            });
-          })
+        web.chat.postMessage({
+          /* eslint-disable-next-line */
+          "channel"    : channel_id,
+          "text"       : poll.question,
+          "attachments": [
+            {
+              "fallback"       : "Cannot display the responses",
+              "callback_id"    : `askia_poll_${poll.id}`,
+              "color"          : "#3AA3E3",
+              "attachment_type": "default",
+              "actions"        : poll.responses
+            }
+          ]
+        }).then(response => (poll.ts = response.ts, response))
           .then(_ => res.status(200).end())
           .catch(err => {
             console.error("actions::response::failure", err);
@@ -99,7 +63,7 @@ app.post(
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
     const data   = JSON.parse(payload);
-    const match  = /askia_poll_responses_([\d+])/.exec(data.callback_id);
+    const match  = /askia_poll_([\d+])/.exec(data.callback_id);
 
     if (match) {
       const pollId   = parseInt(match[1], 10);
