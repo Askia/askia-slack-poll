@@ -54,7 +54,7 @@ app.post(
       ? poll.responses.find(x => x.name === actionId)
       : undefined;
 
-    console.log(pollId, actionId, action.name);
+    console.log('values', pollId, actionId, action.name);
 
     if (response !== undefined) {
       response.votes += 1;
