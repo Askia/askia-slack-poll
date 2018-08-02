@@ -29,6 +29,8 @@ app.post(
       else {
         const poll = db.generate(user_id, channel_id, xs);
 
+        console.log('poll', poll);
+
         slackMessage(response_url, pollMsg(poll))
           .then(_ => res.status(200).end())
           .catch(err => {
