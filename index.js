@@ -101,7 +101,7 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
 const pollMsg = (x, replaceOrignal = false) => ({
   "response_type"   : "in_channel",
   "replace_original": replaceOrignal,
-  "icon_url"        : "https://www.askia.com/mstile-310x310.png",
+  "icon_url"        : "https://www.askia.com/askia_bot_icon.png",
   "text"            : pollTpl(x),
   "attachments"     : [
     {
