@@ -99,6 +99,7 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
  * @type {Poll -> SlackRequest}
  */
 const pollMsg = (x, replaceOrignal = false) => ({
+  "response_type"   : "in_channel",
   "replace_original": replaceOrignal,
   "text"            : pollTpl(x),
   "attachments"     : [
