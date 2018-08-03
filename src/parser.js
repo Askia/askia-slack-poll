@@ -59,7 +59,7 @@ const textReg = new RegExp(
     // delimiters.
     `(\\s|\\r?\\n|\\r|^)+` +
     // quoted fields.
-    `(?:"([^"]*(?:""[^"]*)*)"|` +
+    `(?:[""]([^""]*(?:""[^"]*)*)[""]|` +
     // unquoted fields.
     `([^"\\s\\r\\n]*))`
   ),
