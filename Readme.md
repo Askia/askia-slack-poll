@@ -80,6 +80,7 @@
 
    ```
    cd to/the/repo/folder   
+   heroku git:remote -a askia-slack-poll
    git push heroku master
    ```
 
