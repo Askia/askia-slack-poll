@@ -74,9 +74,16 @@
 
 3. Clone the repository
 
-4. Make some change on the project
+4. Sync the repo with the heroku remote
 
-5. Push changes to heroku to update your server application
+   ```
+   cd to/the/repo/folder   
+   heroku git:remote -a askia-slack-poll
+   ```
+
+5. Make some change on the project
+
+6. Push changes to heroku to update your server application
 
    ```
    cd to/the/repo/folder   
