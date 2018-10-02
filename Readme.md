@@ -56,11 +56,19 @@
    export SLACK_APP_SERVER=http://myappserver.com
    ```
 
-7. Go at the root level of your repository and then start the server
+7. Install PM2 with yarn
 
    ```
-   yarn start
+   yarn global add pm2
    ```
+
+8. Register and launch your application with pm2
+
+
+**NOTES:** Do not forget to launch PM2 and exports variables at startup.
+
+- PM2 startup script: https://pm2.io/docs/en/runtime/guide/startup-hook
+- ENV startup script can be defined by creating a script to `/etc/profile.d/slackbot.sh`
 
 # Heroku (Dev install)
 
