@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 9001));
-app.get('/', (req, res) => res.send('It works!'));
+app.get('/', (req, res) => res.send('Slackbot up and running\n'));
 
 app.post(
   '/post',
