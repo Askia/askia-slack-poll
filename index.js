@@ -6,6 +6,8 @@ const db         = require('./src/db');
 
 const app = express();
 
+console.log("test");
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
