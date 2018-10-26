@@ -24,7 +24,7 @@ app.post(
     }
     else {
       const xs = parser.parse(text);
-
+      console.log(user_id);
       if (3 > xs.length) {
         res.status(400).end('Not enough values found');
       }
@@ -149,3 +149,18 @@ const sorter = (x, y) => {
  * Shorthand to `console.log()`.
  */
 const log = (...xs) => console.log(...xs);
+
+
+/**
+const connect = (f) => new Promise((resolve, reject) => {
+    MongoClient.connect(url, (err, client) => {
+      if (err) return reject(err);
+      resolve({client, db: client.db(dbName)});
+    }); 
+});
+
+const create = () => connect()
+  .then(ctx => dosomething return ctx)
+  .then(ctx => ctx.client.close())
+
+ */

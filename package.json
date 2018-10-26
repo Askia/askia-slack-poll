@@ -6,7 +6,7 @@
   "license": "Askia",
   "scripts": {
   "start": "node index.js",
-    "start:dev":"node --inspect=7700 index.js"
+    "start:dev":"node --inspect index.js"
   },
   "engines": {
     "npm": "^6.2.0",
