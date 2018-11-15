@@ -165,7 +165,9 @@ const pollTpl = x => [
   ...x.responses
     .slice()
     .sort(sorter)
-    .map(y => `• *${y.text}* \`${y.votes}\`\n_${y.users.join(', ')}_`)
+    .map(y =>
+      `• *${y.text}* \`${y.votes}\`\n${y.users
+        .map(el => '_'.concat(el).concat('_')).join(', ')}`)
 ].join('\n');
 
 
