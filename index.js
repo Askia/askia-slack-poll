@@ -6,14 +6,17 @@ const db         = require('./src/db');
 
 const app = express();
 
-console.log("test");
-
+/* Settings of the server */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('port', (process.env.PORT || 9001));
+
+/* End Settings */
+/* Send a get request to check if the server is up and running */
 app.get('/', (req, res) => res.send('Askia slackbot up and running\n'));
 
+/* Display the poll */
 app.post(
   '/post',
   /* eslint-disable-next-line */
@@ -24,51 +27,72 @@ app.post(
     }
     else {
       const xs = parser.parse(text);
-      console.log(user_id);
+
       if (3 > xs.length) {
         res.status(400).end('Not enough values found');
       }
       else {
-        const poll = db.generate(user_id, channel_id, xs);
-
-        slackMessage(response_url, pollMsg(poll))
-          .then(_ => res.status(200).end())
-          .catch(err => {
-            log("Post failure", err);
-            res.status(500).end();
-          });
+        db
+          .create(user_id, channel_id, xs)
+          .then(poll =>
+            slackMessage(response_url, pollMsg(poll))
+              .then(_ => res.status(200).end())
+              .catch(err => {
+                log("Post failure", err);
+                res.status(500).end();
+              })
+          );
       }
     }
   }
 );
 
+/* Manage the update of the poll list */
 app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
     /* eslint-disable-next-line */
     const {actions: [action], callback_id, response_url} = JSON.parse(payload);
-    const match    = /askia_poll_([\d+])/.exec(callback_id);
+    const match    = /askia_poll_([a-z0-9]+)/.exec(callback_id);
     const pollId   = match !== null ? parseInt(match[1], 10) : undefined;
-    const poll     = db.get(pollId);
-    const actionId = parseInt(action.name, 10);
-    const response = poll !== undefined
-      ? poll.responses.find(x => x.name === actionId)
-      : undefined;
 
-    if (response !== undefined) {
-      response.votes += 1;
+    db
+      .get(pollId)
+      .then(poll => {
+        const actionId = parseInt(action.name, 10);
+        const response = poll !== undefined
+          ? poll.responses.find(x => x.name === actionId)
+          : undefined;
 
-      slackMessage(response_url, pollMsg(poll, true))
-        .then(_ => res.status(200).end())
-        .catch(err => {
-          log("Action failure", err);
-          res.status(500).end();
-        });
-    }
-    else {
-      res.status(404).end('Poll does not exist anymore');
-    }
+        if (response !== undefined) {
+          response.votes += 1;
+
+          return db
+            .update(pollId, {responses: poll.responses})
+            .then(_ => slackMessage(response_url, pollMsg(poll, true))
+              .then(_ => res.status(200).end())
+              .catch(err => {
+                err.code = 500;
+                throw err;
+              })
+            );
+        }
+        else {
+          const err = new Error('Undefined response');
+
+          err.code = 404;
+          throw err;
+        }
+      })
+      .catch(err => {
+        if ('code' in err) {
+          res.status(err.code).end(err.message);
+        }
+        else {
+          res.status(404).end('Poll does not exist anymore');
+        }
+      });
   }
 );
 
@@ -112,7 +136,7 @@ const pollMsg = (x, replaceOrignal = false) => ({
   "attachments"     : [
     {
       "fallback"       : "Cannot display the responses",
-      "callback_id"    : `askia_poll_${x.id}`,
+      "callback_id"    : `askia_poll_${x._id}`,
       "color"          : "#283B49",
       "attachment_type": "default",
       "actions"        : x.responses
@@ -150,17 +174,3 @@ const sorter = (x, y) => {
  */
 const log = (...xs) => console.log(...xs);
 
-
-/**
-const connect = (f) => new Promise((resolve, reject) => {
-    MongoClient.connect(url, (err, client) => {
-      if (err) return reject(err);
-      resolve({client, db: client.db(dbName)});
-    }); 
-});
-
-const create = () => connect()
-  .then(ctx => dosomething return ctx)
-  .then(ctx => ctx.client.close())
-
- */
