@@ -86,5 +86,6 @@ const response = (id, text, type = 'button') => ({
   'name' : id,
   'value': id,
   'votes': 0,
+  'users': [],
   text
 });

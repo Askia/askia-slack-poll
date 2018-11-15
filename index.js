@@ -53,9 +53,10 @@ app.post(
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
     /* eslint-disable-next-line */
-    const {actions: [action], callback_id, response_url} = JSON.parse(payload);
+    const {actions: [action], callback_id, response_url, user} = JSON.parse(payload);
     const match    = /askia_poll_([a-z0-9]+)/.exec(callback_id);
     const pollId   = match !== null ? match[1] : undefined;
+    const userName = user.name || '';
 
     db
       .get(pollId)
@@ -66,7 +67,16 @@ app.post(
           : undefined;
 
         if (response !== undefined) {
-          response.votes += 1;
+          const index = response.users.indexOf(userName);
+
+          if (index === -1) {
+            response.votes += 1;
+            response.users.push(userName);
+          }
+          else {
+            response.votes -= 1;
+            response.users.splice(index, 1);
+          }
 
           return db
             .update(pollId, {responses: poll.responses})
@@ -155,7 +165,7 @@ const pollTpl = x => [
   ...x.responses
     .slice()
     .sort(sorter)
-    .map(y => `• ${y.text} \`${y.votes}\`\n`)
+    .map(y => `• ${y.text} \`${y.votes}\`\n ${y.users.join(' ')}`)
 ].join('\n');
 
 /**
