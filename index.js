@@ -160,7 +160,7 @@ const pollMsg = (x, replaceOrignal = false) => ({
  * @type {Poll -> String}
  */
 const pollTpl = x => [
-  x.question,
+  '*'.concat(x.question).concat('*'),
   '',
   ...x.responses
     .slice()
