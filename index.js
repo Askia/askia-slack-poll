@@ -55,7 +55,7 @@ app.post(
     /* eslint-disable-next-line */
     const {actions: [action], callback_id, response_url} = JSON.parse(payload);
     const match    = /askia_poll_([a-z0-9]+)/.exec(callback_id);
-    const pollId   = match !== null ? parseInt(match[1], 10) : undefined;
+    const pollId   = match !== null ? match[1] : undefined;
 
     db
       .get(pollId)
