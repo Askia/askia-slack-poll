@@ -7,16 +7,11 @@ const {MongoClient, ObjectID} = require('mongodb');
  */
 const connect = () => new Promise((resolve, reject) =>
   MongoClient.connect(process.env.DATABASE_URL, (err, conn) => err
-    ? Promise
-      .reject(err)
-      .catch(err => {
-        conn.close();
-        reject(err);
-      })
+    ? reject(err)
     : Promise
       .resolve(conn
         .db(process.env.DATABASE_NAME)
-        .collections('polls')
+        .collection('polls')
       )
       .then(resolve)
       .then(() => conn.close())
