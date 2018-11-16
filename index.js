@@ -77,10 +77,12 @@ app.post(
               [`responses.${poll.responses.indexOf(response)}`]: {
                 ...(index === -1
                   ? {
+                    ...response,
                     votes: response.votes + 1,
                     users: [...response.users, name]
                   }
                   : {
+                    ...response,
                     votes: response.votes - 1,
                     users: [
                       ...response.users.slice(0, index),
