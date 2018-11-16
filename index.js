@@ -144,14 +144,30 @@ const pollMsg = (x, replaceOrignal = false) => ({
   "replace_original": replaceOrignal,
   "text"            : pollTpl(x),
   "attachments"     : [
-    {
-      "fallback"       : "Cannot display the responses",
-      "callback_id"    : `askia_poll_${x._id}`,
-      "color"          : "#283B49",
-      "attachment_type": "default",
-      "actions"        : x.responses
-    }
+    ...x.responses.reduce(
+      (prev, y, i) => 0 === i % 5
+        ? [
+          ...prev,
+          {
+            "fallback"       : "Cannot display the responses",
+            "callback_id"    : `askia_poll_${x._id}`,
+            "color"          : "#283B49",
+            "attachment_type": "default",
+            "actions"        : [y]
+          }
+        ]
+        : [
+          ...prev.slice(0, -1),
+          addResponse(prev[prev.length - 1], y)
+        ],
+      []
+    )
   ]
+});
+
+const addResponse = (o, x) => ({
+  ...o,
+  responses: [...o.responses, x]
 });
 
 /**
