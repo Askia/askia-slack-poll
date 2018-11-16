@@ -71,9 +71,10 @@ app.post(
 
         if (response !== undefined) {
           const index = response.users.indexOf(name);
+          let r;
 
-          return db
-            .update(pollId, {
+          if (0 === poll.limit) {
+            r = {
               [`responses.${poll.responses.indexOf(response)}`]: {
                 ...(index === -1
                   ? {
@@ -91,7 +92,33 @@ app.post(
                   }
                 )
               }
-            })
+            };
+          }
+          else {
+            const index = response.users.indexOf(name);
+
+            if (index !== -1) {
+              r = {
+                ...response,
+                votes: response.votes - 1,
+                users: [
+                  ...response.users.slice(0, index),
+                  ...response.users.slice(index + 1, response.users.length)
+                ]
+              };
+            }
+            else if (poll.limit > poll.responses.find(x =>
+              x.users.includes(name).length)) {
+              r = {
+                ...response,
+                votes: response.votes + 1,
+                users: [...response.users, name]
+              };
+            }
+          }
+
+          return db
+            .update(pollId, r)
             .then(_ => db.get(pollId))
             .then(poll => slackMessage(response_url, pollMsg(poll, true))
               .then(_ => res.status(200).end())
