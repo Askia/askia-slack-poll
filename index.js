@@ -28,6 +28,8 @@ app.post(
     else {
       const data = parser.parse(text);
 
+      console.log(data);
+
       if (3 > data._.length) {
         res.status(400).end('Not enough values found');
       }
@@ -96,24 +98,40 @@ app.post(
           }
           else {
             const index = response.users.indexOf(name);
+            
+            console.log('action with limit', 'user:', name, poll);
+            console.log('blabla');
+            console.log('filtered responses', poll.responses.filter(x => {
+              return x.users.includes(name)
+            }).length);
 
             if (index !== -1) {
               r = {
-                ...response,
-                votes: response.votes - 1,
-                users: [
-                  ...response.users.slice(0, index),
-                  ...response.users.slice(index + 1, response.users.length)
-                ]
+                [`responses.${poll.responses.indexOf(response)}`]: {
+                  ...response,
+                  votes: response.votes - 1,
+                  users: [
+                    ...response.users.slice(0, index),
+                    ...response.users.slice(index + 1, response.users.length)
+                  ]
+                }
               };
             }
-            else if (poll.limit > poll.responses.find(x =>
-              x.users.includes(name).length)) {
+            else if (poll.limit > poll.responses.filter(x =>
+              x.users.includes(name)).length) {
               r = {
-                ...response,
-                votes: response.votes + 1,
-                users: [...response.users, name]
+                [`responses.${poll.responses.indexOf(response)}`]: {
+                  ...response,
+                  votes: response.votes + 1,
+                  users: [...response.users, name]
+                }
               };
+            }
+            else {
+              const err = new Error('User limit reached');
+
+              err.code = 400;
+              throw err;
             }
           }
 
@@ -136,6 +154,8 @@ app.post(
         }
       })
       .catch(err => {
+        console.error('Action error:', err);
+
         if ('code' in err) {
           res.status(err.code).end(err.message);
         }
