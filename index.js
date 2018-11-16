@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const request    = require('request');
 const express    = require('express');
 const bodyParser = require('body-parser');
@@ -19,7 +20,6 @@ app.get('/', (req, res) => res.send('Askia slackbot up and running\n'));
 /* Display the poll */
 app.post(
   '/post',
-  /* eslint-disable-next-line */
   ({body:{token, user_id, text, response_url, channel_id}}, res) => {
     if (token !== process.env.SLACK_APP_TOKEN) {
       log('Invalid token', token);
@@ -52,11 +52,14 @@ app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
   ({body: {payload}}, res) => {
-    /* eslint-disable-next-line */
-    const {actions: [action], callback_id, response_url, user} = JSON.parse(payload);
+    const {
+      actions: [action],
+      callback_id,
+      response_url,
+      user: {name}
+    } = JSON.parse(payload);
     const match    = /askia_poll_([a-z0-9]+)/.exec(callback_id);
     const pollId   = match !== null ? match[1] : undefined;
-    const userName = user.name || '';
 
     db
       .get(pollId)
@@ -67,19 +70,26 @@ app.post(
           : undefined;
 
         if (response !== undefined) {
-          const index = response.users.indexOf(userName);
-
-          if (index === -1) {
-            response.votes += 1;
-            response.users.push(userName);
-          }
-          else {
-            response.votes -= 1;
-            response.users.splice(index, 1);
-          }
+          const index = response.users.indexOf(name);
 
           return db
-            .update(pollId, {responses: poll.responses})
+            .update(pollId, {
+              [`responses.${index}`]: {
+                ...(index === -1
+                  ? {
+                    votes: response.votes + 1,
+                    users: [...response.users, name]
+                  }
+                  : {
+                    votes: response.votes - 1,
+                    users: [
+                      ...response.users.slice(0, index),
+                      ...response.users.slice(index + 1, response.users.length)
+                    ]
+                  }
+                )
+              }
+            })
             .then(_ => slackMessage(response_url, pollMsg(poll, true))
               .then(_ => res.status(200).end())
               .catch(err => {
@@ -158,14 +168,26 @@ const pollMsg = (x, replaceOrignal = false) => ({
         ]
         : [
           ...prev.slice(0, -1),
-          addResponse(prev[prev.length - 1], y)
+          bindAction(prev[prev.length - 1], y)
         ],
       []
     )
   ]
 });
 
-const addResponse = (o, x) => ({
+/**
+ * Binds an action `x` to a SlackAttachement object `o`
+ *
+ * @param {SlackAttachement} o
+ * The attachment where you want to add the action
+ *
+ * @param {Action} x
+ * The action object to attach
+ *
+ * @returns {SlackAttachement}
+ * Returns the modified attachment object.
+ */
+const bindAction = (o, x) => ({
   ...o,
   actions: [...o.actions, x]
 });
@@ -185,7 +207,6 @@ const pollTpl = x => [
       `• *${y.text}* \`${y.votes}\`\n${y.users
         .map(el => '_'.concat(el).concat('_')).join(', ')}`)
 ].join('\n');
-
 
 /**
  * Sorter function for poll response items organized by votes.
