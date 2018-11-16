@@ -5,8 +5,8 @@
   "main": "index.js",
   "license": "Askia",
   "scripts": {
-  "start": "node index.js",
-    "start:dev":"node --inspect index.js"
+    "start": "node index.js",
+    "start:dev": "node --inspect index.js"
   },
   "engines": {
     "npm": "^6.2.0",
@@ -18,7 +18,8 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "mongodb": "^3.1.6",
-    "request": "^2.87.0"
+    "request": "^2.87.0",
+    "yargs": "^12.0.2"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",

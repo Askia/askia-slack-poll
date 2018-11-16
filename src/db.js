@@ -40,14 +40,16 @@ exports.get = pollId => connect()
  *
  * @function {(String, String, [String] -> Promise<Poll>)}
  */
-exports.create = (userId, channelId, values) => connect()
+exports.create = (userId, channelId, data) => connect()
   .then(db => db
     .insertOne({
       channelId: channelId,
       time     : new Date().getTime(),
       ownerId  : userId,
-      question : values[0],
-      responses: values
+      anonymous: data.anonymous,
+      limit    : data.limit,
+      question : data._[0],
+      responses: data._
         .slice(1)
         .reduce((xs, x, i) => [...xs, response(i + 1, x)], [])
     })

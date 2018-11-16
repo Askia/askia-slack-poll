@@ -26,14 +26,14 @@ app.post(
       res.status(403).end('Access forbidden');
     }
     else {
-      const xs = parser.parse(text);
+      const data = parser.parse(text);
 
-      if (3 > xs.length) {
+      if (3 > data._.length) {
         res.status(400).end('Not enough values found');
       }
       else {
         db
-          .create(user_id, channel_id, xs)
+          .create(user_id, channel_id, data)
           .then(poll =>
             slackMessage(response_url, pollMsg(poll))
               .then(_ => res.status(200).end())
@@ -207,9 +207,12 @@ const pollTpl = x => [
     .slice()
     .sort(sorter)
     .map(y =>
-      `• *${y.text}* \`${y.votes}\`\n${y.users
-        .map(el => '_'.concat(el).concat('_')).join(', ')}`)
+      `• *${y.text}* \`${y.votes}\`\n${handleUsersDisplay(y, x.anonymous)}`)
 ].join('\n');
+
+const handleUsersDisplay = (y, b) => b
+  ? y.users.map(el => '_'.concat(el).concat('_')).join(', ')
+  : '';
 
 /**
  * Sorter function for poll response items organized by votes.
