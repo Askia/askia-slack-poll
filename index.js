@@ -210,7 +210,7 @@ const pollTpl = x => [
       `• *${y.text}* \`${y.votes}\`\n${handleUsersDisplay(y, x.anonymous)}`)
 ].join('\n');
 
-const handleUsersDisplay = (y, b) => b
+const handleUsersDisplay = (y, b) => !b
   ? y.users.map(el => '_'.concat(el).concat('_')).join(', ')
   : '';
 
