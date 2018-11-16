@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 
-exports.parse = yargs
+exports.parse = cs => yargs
   .option({
     limit: {
       default: 0,
@@ -11,5 +11,5 @@ exports.parse = yargs
       type   : 'boolean'
     }
   })
-  .parse;
+  .parse(cs.replace(/“|”/g, '"'));
 
