@@ -74,7 +74,7 @@ app.post(
 
           return db
             .update(pollId, {
-              [`responses.${index}`]: {
+              [`responses.${poll.responses.indexOf(response)}`]: {
                 ...(index === -1
                   ? {
                     votes: response.votes + 1,
