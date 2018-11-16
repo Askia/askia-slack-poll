@@ -167,7 +167,7 @@ const pollMsg = (x, replaceOrignal = false) => ({
 
 const addResponse = (o, x) => ({
   ...o,
-  responses: [...o.responses, x]
+  actions: [...o.actions, x]
 });
 
 /**
