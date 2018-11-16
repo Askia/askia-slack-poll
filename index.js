@@ -92,7 +92,8 @@ app.post(
                 )
               }
             })
-            .then(_ => slackMessage(response_url, pollMsg(poll, true))
+            .then(_ => db.get(pollId))
+            .then(poll => slackMessage(response_url, pollMsg(poll, true))
               .then(_ => res.status(200).end())
               .catch(err => {
                 err.code = 500;
