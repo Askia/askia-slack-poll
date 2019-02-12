@@ -78,6 +78,15 @@ exports.update = (pollId, data) => connect()
     })
   );
 
+exports.delete = pollId => connect()
+  .then(db => db
+    .deleteOne({'_id': new ObjectID(pollId)})
+    .catch(err => {
+      console.error('db deleteOne() failure', err);
+      throw err;
+    })
+  );
+
 /**
  * Creates a response entry.
  *
