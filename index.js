@@ -1,16 +1,17 @@
 /* eslint-disable camelcase */
-const request    = require('request');
-const express    = require('express');
-const bodyParser = require('body-parser');
-const parser     = require('./src/parser');
-const db         = require('./src/db');
+const request     = require('request');
+const express     = require('express');
+const bodyParser  = require('body-parser');
+const parser      = require('./src/parser');
+const db          = require('./src/db');
+const {WebClient} = require('@slack/client');
 
 const app = express();
+const web = new WebClient(process.env.SLACK_APP_OAUTH);
 
 /* Settings of the server */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set('port', (process.env.PORT || 9001));
 
 /* End Settings */
@@ -28,10 +29,12 @@ app.post(
     else {
       const data = parser.parse(text);
 
-      console.log(data);
-
       if (3 > data._.length) {
-        res.status(400).end('Not enough values found');
+        web.chat.postEphemeral({
+          channel: channel_id,
+          user   : user_id,
+          text   : 'Not enough values found'
+        });
       }
       else {
         db
@@ -53,18 +56,19 @@ app.post(
 app.post(
   '/actions',
   bodyParser.urlencoded({extended: false}),
-  ({body: {payload}}, res) => {
+  (req, res) => {
+    const {body: {payload}} = req;
     const {
       actions: [action],
+      channel,
       callback_id,
       response_url,
-      user: {name}
+      user
     } = JSON.parse(payload);
-    const match    = /askia_poll_([a-z0-9]+)/.exec(callback_id);
-    const pollId   = match !== null ? match[1] : undefined;
+    const match  = /askia_poll_([a-z0-9]+)/.exec(callback_id);
+    const pollId = match !== null ? match[1] : undefined;
 
-    db
-      .get(pollId)
+    db.get(pollId)
       .then(poll => {
         const actionId = parseInt(action.name, 10);
         const response = poll !== undefined
@@ -72,7 +76,7 @@ app.post(
           : undefined;
 
         if (response !== undefined) {
-          const index = response.users.indexOf(name);
+          const index = response.users.indexOf(user.name);
           let r;
 
           if (0 === poll.limit) {
@@ -82,14 +86,17 @@ app.post(
                   ? {
                     ...response,
                     votes: response.votes + 1,
-                    users: [...response.users, name]
+                    users: [...response.users, user.name]
                   }
                   : {
                     ...response,
                     votes: response.votes - 1,
                     users: [
                       ...response.users.slice(0, index),
-                      ...response.users.slice(index + 1, response.users.length)
+                      ...response.users.slice(
+                        index + 1,
+                        response.users.length
+                      )
                     ]
                   }
                 )
@@ -97,13 +104,7 @@ app.post(
             };
           }
           else {
-            const index = response.users.indexOf(name);
-            
-            console.log('action with limit', 'user:', name, poll);
-            console.log('blabla');
-            console.log('filtered responses', poll.responses.filter(x => {
-              return x.users.includes(name)
-            }).length);
+            const index = response.users.indexOf(user.name);
 
             if (index !== -1) {
               r = {
@@ -112,26 +113,26 @@ app.post(
                   votes: response.votes - 1,
                   users: [
                     ...response.users.slice(0, index),
-                    ...response.users.slice(index + 1, response.users.length)
+                    ...response.users.slice(
+                      index + 1,
+                      response.users.length
+                    )
                   ]
                 }
               };
             }
             else if (poll.limit > poll.responses.filter(x =>
-              x.users.includes(name)).length) {
+              x.users.includes(user.name)).length) {
               r = {
                 [`responses.${poll.responses.indexOf(response)}`]: {
                   ...response,
                   votes: response.votes + 1,
-                  users: [...response.users, name]
+                  users: [...response.users, user.name]
                 }
               };
             }
             else {
-              const err = new Error('User limit reached');
-
-              err.code = 400;
-              throw err;
+              throw new Error('Max number of responses limit reached');
             }
           }
 
@@ -140,28 +141,20 @@ app.post(
             .then(_ => db.get(pollId))
             .then(poll => slackMessage(response_url, pollMsg(poll, true))
               .then(_ => res.status(200).end())
-              .catch(err => {
-                err.code = 500;
-                throw err;
-              })
             );
         }
         else {
-          const err = new Error('Undefined response');
-
-          err.code = 404;
-          throw err;
+          throw new Error('Undefined response');
         }
       })
       .catch(err => {
-        console.error('Action error:', err);
+        web.chat.postEphemeral({
+          channel: channel.id,
+          user   : user.id,
+          text   : err.message
+        });
 
-        if ('code' in err) {
-          res.status(err.code).end(err.message);
-        }
-        else {
-          res.status(404).end('Poll does not exist anymore');
-        }
+        res.status(200).end();
       });
   }
 );
@@ -210,7 +203,7 @@ const pollMsg = (x, replaceOrignal = false) => ({
           ...prev,
           {
             "fallback"       : "Cannot display the responses",
-            "callback_id"    : `askia_poll_${x._id}`,
+            "callback_id"    : callbackId(x._id),
             "color"          : "#283B49",
             "attachment_type": "default",
             "actions"        : [y]
@@ -224,6 +217,9 @@ const pollMsg = (x, replaceOrignal = false) => ({
     )
   ]
 });
+
+const callbackPrefix = "askia_poll_";
+const callbackId = pollId => `${callbackPrefix}${pollId}`;
 
 /**
  * Binds an action `x` to a SlackAttachement object `o`
