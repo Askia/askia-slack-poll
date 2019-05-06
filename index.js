@@ -192,81 +192,165 @@ const slackMessage = (uri, json) => new Promise((res, rej) => request(
  *
  * @type {Poll -> SlackRequest}
  */
-const pollMsg = (x, replaceOrignal = false) => ({
+const pollMsg = (poll, replaceOrignal = false) => ({
   "response_type"   : "in_channel",
   "replace_original": replaceOrignal,
-  "text"            : pollTpl(x),
+  "text"            : renderResponses(poll),
   "attachments"     : [
-    ...x.responses.reduce(
-      (prev, y, i) => 0 === i % 5
-        ? [
-          ...prev,
-          {
-            "fallback"       : "Cannot display the responses",
-            "callback_id"    : callbackId(x._id),
-            "color"          : "#283B49",
-            "attachment_type": "default",
-            "actions"        : [y]
-          }
-        ]
-        : [
-          ...prev.slice(0, -1),
-          bindAction(prev[prev.length - 1], y)
-        ],
+    ...poll.responses.reduce(
+      (xs, response, i) => 0 === i % 5
+        ? [...xs, createSlackAttachment(poll, response)]
+        : [...xs.slice(0, -1), addAttachmentAction(last(xs), response)],
       []
     )
   ]
 });
 
-const callbackPrefix = "askia_poll_";
-const callbackId = pollId => `${callbackPrefix}${pollId}`;
-
 /**
- * Binds an action `x` to a SlackAttachement object `o`
+ * Creates a {@link SlackAttachment} object for a given {@link Poll} object
+ * with the specified response bounded as attachement action.
  *
- * @param {SlackAttachement} o
- * The attachment where you want to add the action
+ * @param {Poll} poll
+ * The poll for which the attachement is create.
  *
- * @param {Action} x
- * The action object to attach
+ * @param {PollResponse} response
+ * The response to bind as an attachement action.
  *
- * @returns {SlackAttachement}
- * Returns the modified attachment object.
+ * @returns {SlackAttachment}
+ * Returns the created slack attachment oject.
  */
-const bindAction = (o, x) => ({
-  ...o,
-  actions: [...o.actions, x]
+const createSlackAttachment = (poll, response) => ({
+  "fallback"       : "Cannot display the responses",
+  "callback_id"    : callbackId(poll._id),
+  "color"          : "#283B49",
+  "attachment_type": "default",
+  "actions"        : [response]
 });
 
 /**
- * Creates the poll text message.
+ * Binds an action `x` to a SlackAttachement object `o`.
  *
- * @type {Poll -> String}
+ * @param {SlackAttachement} attachment
+ * The attachment where you want to add the action
+ *
+ * @param {PollResponse} response
+ * The poll response object to add as an attachment action.
+ *
+ * @returns {SlackAttachment}
+ * Returns the modified attachment object.
  */
-const pollTpl = x => [
-  '*'.concat(x.question).concat('*'),
+const addAttachmentAction = (attachment, response) => ({
+  ...attachment,
+  "actions": [...attachment.actions, response]
+});
+
+/**
+ * Renders the responses of the poll text message.
+ *
+ * @param {Poll} poll
+ * The poll object to render.
+ */
+const renderResponses = poll => [
+  '*'.concat(poll.question).concat('*'),
   '',
-  ...x.responses
+  ...poll.responses
     .slice()
     .sort(sorter)
-    .map(y =>
-      `• *${y.text}* \`${y.votes}\`\n${handleUsersDisplay(y, x.anonymous)}`)
+    .map(renderResponse(poll))
 ].join('\n');
 
-const handleUsersDisplay = (y, b) => !b
-  ? y.users.map(el => '_'.concat(el).concat('_')).join(', ')
+/**
+ * Renders a {@link PollResponse} object.
+ *
+ * @param {Poll} poll
+ * The poll context to wich the response belongs.
+ *
+ * @param {PollResponse}
+ * The poll response object to render
+ *
+ * @returns {string}
+ * Returns the rendered response.
+ */
+const renderResponse = (poll, response) => [
+  `• *${response.text}* \`${response.votes}\``,
+  `${renderUsers(poll, response.users)}`
+].join('\n');
+
+/**
+ * Renders the list of `users` depending of the `poll` context.
+ *
+ * @param {string[]} response
+ * The list of users to render.
+ *
+ * @param {Poll} poll
+ * The poll context to the which the response belongs to.
+ *
+ * @returns {string}
+ * Returns the rendered list of users.
+ */
+const renderUsers = (poll, users) => !poll.anonymous
+  ? users.map(user => `_${user}_`).join(', ')
   : '';
 
 /**
- * Sorter function for poll response items organized by votes.
+ * Get the slack callback unique identifier from an int value.
  *
- * @type {(Response, Response) -> Int}
+ * @param {number} i
+ * The int value from which to get the callback id.
+ *
+ * @returns {string}
+ * Returns the slack callback unique identifier.
+ */
+const callbackId = i => `${CALLBACK_ID_PREFIX}${i}`;
+
+/**
+ * Prefix for all slack callback unique identifiers.
+ *
+ * @type {string}
+ */
+const CALLBACK_ID_PREFIX = "askia_poll_";
+
+/**
+ * Represent the `greater` ordering value.
+ *
+ * @type {number}
+ */
+const GT = -1;
+
+/**
+ * Represent the `greater` ordering value.
+ *
+ * @type {number}
+ */
+const LT = +1;
+
+/**
+ * Represent the `greater` ordering value.
+ *
+ * @type {number}
+ */
+const EQ = 0;
+
+/**
+ * Gets an ordering value for a specified {@link PollResponse} `x`
+ * compared to another existing {@link PollResponse} `y`.
+ *
+ * @param {PollResponse} x
+ * The poll response to for which we get the ordering value.
+ *
+ * @param {PollResponse} y
+ * The poll response which used as ordering comparison.
+ *
+ * @returns {number}
+ * Returns an ordering int value between `-1` and `+1`.
  */
 const sorter = (x, y) => {
-  if (x.votes > y.votes) return -1;
-  if (x.votes < y.votes) return +1;
-  return 0;
+  if (x.votes > y.votes) return GT;
+  if (x.votes < y.votes) return LT;
+  return EQ;
 };
+
+const last = xs => xs[xs.length - 1];
 
 /**
  * Shorthand to `console.log()`.
