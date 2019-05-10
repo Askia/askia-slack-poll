@@ -1,0 +1,54 @@
+.contact-section {
+  padding: 5rem 0 0;
+
+  .card {
+    border: 0;
+
+    h4 {
+      font-size: .8rem;
+      font-family: 'Oswald', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .15rem;
+    }
+
+    hr {
+      border-color: $primary;
+      border-width: .25rem;
+      width: 3rem;
+    }
+  }
+
+  .social {
+    margin-top: 5rem;
+
+    a {
+      text-align: center;
+      height: 3rem;
+      width: 3rem;
+      background: fade-out($white, .9);
+      border-radius: 100%;
+      line-height: 3rem;
+      color: fade-out($white, .7);
+
+      &:hover {
+        color: fade-out($white, .5);
+      }
+
+      &:active {
+        color: $white;
+      }
+    }
+
+    a:hover > .fa-twitter {
+      color: #1DA1F2;
+    }
+
+    a:hover > .fa-facebook-f {
+      color: #3B5998;
+    }
+
+    a:hover > .fa-github {
+      color: #FAFAFA;
+    }
+  }
+}

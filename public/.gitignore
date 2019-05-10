@@ -1,0 +1,20 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.com.apple.timemachine.supported
+.DocumentRevisions-V100
+
+# NodeJS #
+##########
+/node_modules
+
+# Task runners #
+################
+gulpfile.js
+gruntfile.js

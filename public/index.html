@@ -1,9 +1,243 @@
+<!DOCTYPE html>
 <html lang="en">
-<html>
-<head>
-  <meta name="slack-app-id" content="AG4M05399">
-</head>
-<body>
-  <a href="https://slack.com/oauth/authorize?client_id=2541242411.548714173315&scope=commands,chat:write:bot,chat:write:user"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="/Askia is a free Slack bot for polling developed and maintained by Askia to allow Slack users to ask and answer simple questions">
+    <meta name="author" content="Askia SAS">
+    <title>/askia - a polling Slack bot by Askia - Automating insight</title>
+    <meta name="theme-color" content="#DF4335">
+    <meta property="og:image" og:image:width="5118px" og:image:height="3412px" content="https://bot.askia.com/img/bg-masthead.jpg" />
+    <meta property="og:title" content="/Askia - Slack bot - Automating insight" />
+    <meta property="og:url" content="https://bot.askia.com/" />
+    <meta property="og:site_name" content="/Askia - Slack bot - Automating insight" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="/Askia is a free Slack bot for polling developed and maintained by Askia to allow Slack users to ask and answer simple questions">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@askiasoftware">
+    <meta name="twitter:creator" content="@uncleserb">
+    <meta name="twitter:url" content="https://bot.askia.com/">
+    <meta name="twitter:title" content="/Askia - Slack bot - Automating insight">
+    <meta name="twitter:description" content="/Askia is a free Slack bot for polling developed and maintained by Askia to allow Slack users to ask and answer simple questions">
+    <meta name="twitter:image" content="https://bot.askia.com/img/bg-masthead.jpg">
+    <meta name="slack-app-id" content="AG4M05399">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#df4335">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="mstile-144x144.png">
+    <meta name="theme-color" content="#DF4335">
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet">
+    <link href="css/grayscale.min.css" rel="stylesheet">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "url": "https://blog.askia.com"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Askia",
+        "url": "https://www.askia.com",
+        "sameAs": ["https://www.facebook.com/AskiaSoftware", "https://twitter.com/askiasoftware"]
+      }
+    </script>
+  </head>
+  <body id="page-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top" title="Back to top">/askia</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#features">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#download">Download</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Header -->
+    <header class="masthead">
+      <div class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+          <h1 class="mx-auto my-0 text-uppercase">/askia</h1>
+          <h2 class="text-white mx-auto mt-2 mb-5">A free &amp; intelligent little polling bot for your everyday questions in Slack.</h2>
+          <a href="#about" class="btn btn-primary js-scroll-trigger">Get started</a>
+        </div>
+      </div>
+    </header>
+    <!-- About Section -->
+    <section id="about" class="about-section text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2 class="text-white mb-4">Built on 25 years of experience</h2>
+            <h2 class="text-white mb-4">...and some 🍻!</h2>
+            <p class="text-white-75">/askia is a free Slack bot... created by <a href="https://www.askia.com/" target="_blank" rel="noopener noreferrer" title="Askia - Automating insight">Askia</a>. He can be yours right now, simply download him from
+              <a href="https://slack.com/apps" target="_blank" rel="noopener noreferrer" title="View /askia bot on Slack's App Directory">the Slack App Directory</a>. /askia is open source, and you can use him to help you decide anything: where you'll be eating for lunch, what time your friends or colleagues want to meet up, ...</p>
+          </div>
+        </div>
+        <img src="img/screenshot.png" class="img-fluid" alt="/askia bot in use">
+      </div>
+    </section>
+    <!-- Features Section -->
+    <section id="features" class="features-section bg-light">
+      <div class="container">
+        <!-- Featured Project Row -->
+        <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+          <div class="col-xl-8 col-lg-7">
+            <img class="img-fluid mb-3 mb-lg-0" src="img/bg-masthead.jpg" alt="">
+          </div>
+          <div class="col-xl-4 col-lg-5">
+            <div class="featured-text text-center text-lg-left">
+              <h4>Simple</h4>
+              <p class="mb-0">/askia is open source and <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank" rel="noopener noreferrer" title="View GNU GPL v3.0 on fsf.org">GNU GPL v3.0</a> licensed. This means you can use him for anything - even commercial projects! Use him, customize him, and invite him to your workspace!</p>
+            </div>
+          </div>
+        </div>
+        <!-- Feature One Row -->
+        <div class="row justify-content-center no-gutters mb-5 mb-lg-0">
+          <div class="col-lg-6">
+            <img class="img-fluid" src="img/demo-image-01.jpg" alt="">
+          </div>
+          <div class="col-lg-6">
+            <div class="bg-black text-center h-100 project">
+              <div class="d-flex h-100">
+                <div class="project-text w-100 my-auto text-center text-lg-left">
+                  <h4 class="text-white">Fast</h4>
+                  <p class="mb-0 text-white-75">Using /askia is as simple as asking a question! Call /askia, ask your question and provide your response items! You can even use emojis to go even faster 👍 😎</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Feature Two Row -->
+        <div class="row justify-content-center no-gutters">
+          <div class="col-lg-6">
+            <img class="img-fluid" src="img/demo-image-02.jpg" alt="">
+          </div>
+          <div class="col-lg-6 order-lg-first">
+            <div class="bg-black text-center h-100 project">
+              <div class="d-flex h-100">
+                <div class="project-text w-100 my-auto text-center text-lg-right">
+                  <h4 class="text-white">Effective</h4>
+                  <p class="mb-0 text-white-75">Need a quick answer to a question but don't want to send out emails or call for a meeting? Have /askia gather the feedback for you in a matter of minutes!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- Download Section -->
+    <section id="download" class="download-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto text-center">
+            <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
+            <h2 class="text-white mb-5">Get our bot and start asking questions!</h2>
+            <!-- <a href="https://slack.com/apps" class="btn btn-primary mx-auto" rel="noopener noreferrer" title="Download /askia bot from the Slack App Directory">Download</a> -->
+            <a href="https://slack.com/oauth/authorize?client_id=2541242411.548714173315&scope=commands,chat:write:bot,chat:write:user" title="Add /askia bot to Slack" target="_blank">
+              <img alt="Add /askia bot to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x">
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Contact Section -->
+    <section class="contact-section bg-black">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card py-4 h-100">
+              <div class="card-body text-center">
+                <i class="fas fa-globe text-primary mb-2"></i>
+                <h4 class="text-uppercase m-0">Website</h4>
+                <hr class="my-4">
+                <div class="text-black-50">
+                  <a href="https://www.askia.com" title="Askia - Automating insight" target="_blank" rel="noopener noreferrer">www.askia.com</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card py-4 h-100">
+              <div class="card-body text-center">
+                <i class="fas fa-envelope text-primary mb-2"></i>
+                <h4 class="text-uppercase m-0">Email</h4>
+                <hr class="my-4">
+                <div class="text-black-50">
+                  <a href="mailto:contact@askia.com?subject=Contact from /askia bot website">contact@askia.com</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card py-4 h-100">
+              <div class="card-body text-center">
+                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                <h4 class="text-uppercase m-0">Blog</h4>
+                <hr class="my-4">
+                <a href="https://blog.askia.com" target="_blank" title="Open Ends, a blog by Askia" rel="noopener noreferrer">Open Ends</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="social d-flex justify-content-center">
+          <a href="https://twitter.com/askiasoftware" class="mx-2" target="_blank" title="Follow us on Twitter" rel="noopener noreferrer">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://www.facebook.com/AskiaSoftware" class="mx-2" target="_blank" title="Like us on Facebook" rel="noopener noreferrer">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://github.com/Askia/askia-slack-poll" class="mx-2" target="_blank" title="Check out the project on Github" rel="noopener noreferrer">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="https://www.linkedin.com/company/askia" class="mx-2" target="_blank" title="Join us on LinkedIn" rel="noopener noreferrer">
+            <i class="fab fa-linkedin"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-black row">
+      <div class="col-6 text-left text-white-50">Made with <span id="footer-heart">♥️</span> in Paris, London, New York, Mannheim &amp; Los Angeles.</div>
+      <div class="col-6 text-right text-white-50">Copyright &copy; <a href="https://www.askia.com" title="Askia - automating insight" target="_blank" rel="noreferrer noopener">Askia</a> 2019</div>
+    </footer>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="js/grayscale.min.js"></script>
+  </body>
 </html>

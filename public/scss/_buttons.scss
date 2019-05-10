@@ -1,0 +1,27 @@
+.btn {
+  box-shadow: 0 .1875em .1875em 0 rgba(0, 0, 0, .1) !important;
+  padding: 1.25em 2em;
+  font-family: 'Inconsolata', monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  border: 0;
+  border-radius: .125rem;
+}
+
+.btn-primary {
+  background-color: $primary;
+
+  &:hover {
+    background-color: darken($primary, 10%);
+  }
+
+  &:focus {
+    background-color: darken($primary, 10%);
+    color: white;
+  }
+
+  &:active {
+    background-color: darken($primary, 15%) !important;
+  }
+}
