@@ -357,8 +357,7 @@
       {
         "mode": "strict",
         "beforeColon": false,
-        "afterColon": true,
-        "align": "colon"
+        "afterColon": true
       }
     ],
     // enforce consistent spacing before and after keywords
@@ -391,7 +390,7 @@
     // with no arguments
     "new-parens": 2,
     // allow/disallow an empty newline after var statement
-    "newline-after-var": [2, "always"],
+    "newline-after-var": 0,
     // disallow use of the Array constructor
     "no-array-constructor": 2,
     // disallow use of the continue statement

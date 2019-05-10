@@ -3,26 +3,40 @@
   "description": "A slack app poll",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "Askia",
-  "scripts": {
-    "start": "node index.js",
-    "start:dev": "node --inspect index.js"
-  },
+  "module": "lib/index.js",
+  "license": "ASKIA",
   "engines": {
     "npm": "^6.2.0",
-    "yarn": "^1.7.0",
     "node": "^10.7.0"
   },
   "dependencies": {
-    "@slack/client": "^4.3.1",
+    "@slack/client": "^5.0.1",
     "body-parser": "^1.18.3",
+    "duration": "^0.2.2",
+    "esm": "^3.2.22",
     "express": "^4.16.3",
     "mongodb": "^3.1.6",
     "request": "^2.87.0",
+    "timestring": "^6.0.0",
     "yargs": "^12.0.2"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
     "eslint": "^5.2.0"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Askia/askia-slack-poll.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/Askia/askia-slack-poll/issues"
+  },
+  "homepage": "https://github.com/Askia/askia-slack-poll#readme"
 }
