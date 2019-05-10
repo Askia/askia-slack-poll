@@ -6,13 +6,15 @@
 
 3. Select `Slash Commands` and click `Create New Command`
 
-4. Set your slash command settings
+4. Set your slash command settings to `https://{yourdomain}/post`
 
-5. Select `OAuth & Permissions` and click `Install App to Workspace`
+5. Select `Interactive Components` and add a request `https://{yourdomain}/actions`
 
-6. Get your workspace token
+6. Select `OAuth & Permissions` and click `Install App to Workspace`
 
-7. Scroll down to `Scopes` and sets your workspace rights
+7. Get your workspace token
+
+8. Scroll down to `Scopes` and sets your workspace rights
 
    - `chat:write:bot`
    - `chat:write:user`
@@ -21,9 +23,8 @@
 
 1. Create a `unix` server and install:
 
-   - `yarn: 1.7.0`
-   - `node: 10.7.0`
-   - `npm: 6.2.0`
+   - `node: 10.x.x`
+   - `npm: 6.x.x`
 
 2. Clone the repository on your server.
 
@@ -31,7 +32,7 @@
    package dependencies
 
    ```
-   yarn install
+   npm install
    ```
 
 4. Set `SLACK_APP_OAUTH` environment variable with token that you got at
@@ -50,22 +51,34 @@
    export SLACK_APP_TOKEN=xxxxxxxxxx
    ```
 
-6. Set `SLACK_APP_SERVER` with the public DNS of your server.
+6. Set the server `PORT`
 
    ```
-   export SLACK_APP_SERVER=http://myappserver.com
+   export PORT=6463
    ```
 
-7. Install PM2 with yarn
+7. Install and run certbot to generate the SSL certificate
 
    ```
-   yarn global add pm2
+   sudo apt install certbot
    ```
 
-8. Register and launch your application with pm2
+8. Once SSL cert is generated:
+   
+   * set `SSL_KEY` to your `privkey.pem` path
+   * set `SSL_CERT` to your `cert.pem` path
+   * set `SSL_CHAIN` to your `chain.pem` path
+
+9. Install PM2 with npm
+
+   ```
+   npm install --global pm2
+   ```
+
+10. Register and launch your application with pm2
 
 
 **NOTES:** Do not forget to launch PM2 and exports variables at startup.
 
 - PM2 startup script: https://pm2.io/docs/en/runtime/guide/startup-hook
-- ENV startup script can be defined by creating a script to `/etc/profile.d/slackbot.sh`
+- Env variables can be defined in pm2 ecosystem file: https://pm2.io/doc/en/runtime/guide/ecosystem-file/

@@ -1,2 +1,0 @@
-User-agent: *
-Sitemap: https://bot.askia.com/sitemap.xml
