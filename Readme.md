@@ -1,4 +1,9 @@
-# Slack
+# /Askia Slack polling app
+
+/askia is a free Slack app created by [Askia](https://www.askia.com) to ask & answer simple polling questions in a Slack workspace. He can be yours right now, simply download him from [here](https://bot.askia.com).
+/askia is open source (licensed under GNU GPL v3), and you can use him to help you decide anything: where you'll be eating for lunch, what time your friends or colleagues want to meet up, ...
+
+## Slack
 
 1. Go on https://api.slack.com/apps. Then create a new app in Slack.
 
@@ -19,7 +24,7 @@
    - `chat:write:bot`
    - `chat:write:user`
 
-# Server
+## Server
 
 1. Create a `unix` server and install:
 
