@@ -1,4 +1,10 @@
-# Slack
+# /Askia Slack polling app
+
+/askia is a free Slack app created by [Askia](https://www.askia.com) to ask & answer simple polling questions in a Slack workspace. He can be yours right now, simply download him from [here](https://bot.askia.com).
+
+/askia is open source (licensed under GNU GPL v3), and you can use him to help you decide anything: where you'll be eating for lunch, what time your friends or colleagues want to meet up, ...
+
+## Slack
 
 1. Go on https://api.slack.com/apps. Then create a new app in Slack.
 
@@ -19,9 +25,9 @@
    - `chat:write:bot`
    - `chat:write:user`
 
-# Server
+## Server
 
-1. Create a `unix` server and install:
+1. Create a Unix server and install:
 
    - `node: 10.x.x`
    - `npm: 6.x.x`
@@ -64,7 +70,7 @@
    ```
 
 8. Once SSL cert is generated:
-   
+
    * set `SSL_KEY` to your `privkey.pem` path
    * set `SSL_CERT` to your `cert.pem` path
    * set `SSL_CHAIN` to your `chain.pem` path
@@ -82,3 +88,5 @@
 
 - PM2 startup script: https://pm2.io/docs/en/runtime/guide/startup-hook
 - Env variables can be defined in pm2 ecosystem file: https://pm2.io/doc/en/runtime/guide/ecosystem-file/
+
+/askia is licensed by [Askia - automating insight](https://www.askia.com) under [GNU GPL v3](https://github.com/Askia/askia-slack-poll/blob/master/LICENSE).
