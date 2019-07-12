@@ -18,6 +18,8 @@
 
 6. Select `OAuth & Permissions` and click `Install App to Workspace`
 
+7. Add redirect url : `https://{yourserveraddress}/slack/auth/redirect`
+
 7. Get your workspace token
 
 8. Scroll down to `Scopes` and sets your workspace rights
@@ -111,6 +113,7 @@
 
 11. Register and launch your application with pm2
 
+12. Go back to the slack app interface and go to `Manage distribution` and click to the slack button and proceed to the installation
 
 **NOTES:** Do not forget to launch PM2 and exports variables at startup.
 
