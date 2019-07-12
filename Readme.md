@@ -25,6 +25,22 @@
    - `chat:write:bot`
    - `chat:write:user`
 
+## Database
+
+1. Install mongodb
+
+2. Set your database url in env var. 
+   
+   ```
+   export DATABASE_URL="mongodb://127.0.0.1:27017"
+   ```
+
+3. Set your database name in mongodb and then in env vars too.
+
+   ```
+   export DATABASE_NAME="myPollDb"
+   ```
+
 ## Server
 
 1. Create a Unix server and install:
@@ -42,7 +58,7 @@
    ```
 
 4. Set `SLACK_APP_OAUTH` environment variable with token that you got at
-   step `5` from the `Slack configuration` guide.
+   step `6` from the `Slack configuration` guide.
 
    ```
    export SLACK_APP_OAUTH=xoxp-xxx-xxx-xxx-xxx
@@ -57,31 +73,43 @@
    export SLACK_APP_TOKEN=xxxxxxxxxx
    ```
 
-6. Set the server `PORT`
+6. If your app is not distributed you'll have to disable the team authentication
+
+   ```
+   export DISABLE_SLACK_TEAM_AUTH=1
+   ```
+
+   Otherwise:
+
+   ```
+   export DISABLE_SLACK_TEAM_AUTH=""
+   ```
+
+7. Set the server `PORT`
 
    ```
    export PORT=6463
    ```
 
-7. Install and run certbot to generate the SSL certificate
+8. Install and run certbot to generate the SSL certificate
 
    ```
    sudo apt install certbot
    ```
 
-8. Once SSL cert is generated:
+9. Once SSL cert is generated:
 
    * set `SSL_KEY` to your `privkey.pem` path
    * set `SSL_CERT` to your `cert.pem` path
    * set `SSL_CHAIN` to your `chain.pem` path
 
-9. Install PM2 with npm
+10. Install PM2 with npm
 
    ```
    npm install --global pm2
    ```
 
-10. Register and launch your application with pm2
+11. Register and launch your application with pm2
 
 
 **NOTES:** Do not forget to launch PM2 and exports variables at startup.
