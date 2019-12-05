@@ -42,9 +42,7 @@ const help = slackify(fs.readFileSync(
   {encoding: "utf8"}
 ));
 
-/**
- * Handles slack authentication with app redirection pages.
- */
+/** Handles slack authentication with app redirection pages. */
 app.get("/slack/auth/redirect", (req, res) => {
   if (!process.env.SLACK_CLIENT_ID || !process.env.SLACK_CLIENT_SECRET) {
     res.status(500).send("Missing CLIENT_ID or CLIENT_SECRET");
