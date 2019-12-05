@@ -6,10 +6,11 @@ const https       = require("https");
 const path        = require("path");
 const fs          = require("fs");
 const slackify    = require("slackify-markdown");
-const poll        = require("./lib/model/poll.js");
+const pollModel   = require("./lib/model/poll.js");
 const polls       = require("./lib/store/poll.js");
 const teams       = require("./lib/store/team.js");
 const view        = require("./lib/view/poll.js");
+const errView     = require("./lib/view/error.js");
 const vote        = require("./lib/action/vote.js");
 const cmd         = require("./lib/cmd.js");
 const {
@@ -85,11 +86,7 @@ app.post("/post", (req, res) => {
         : showPoll(team_id, user_id, channel_id, argv)
       )
       .then(_ => res.status(200).end())
-      .catch(err => sendError(res, {
-        "channel": channel_id,
-        "user": user_id,
-        "text": err.message
-      }));
+      .catch(sendError(res, channel_id, user_id, team_id));
   }
 });
 
@@ -101,7 +98,6 @@ app.post("/actions", bodyParser.urlencoded({extended: false}), (req, res) => {
   const {body: {payload}} = req;
   const {actions: [action], callback_id, team, user, channel} =
     JSON.parse(payload);
-
   Promise
     .resolve(callback_id)
     .then(tap(log("/action:request.body.callback_id")))
@@ -128,11 +124,7 @@ app.post("/actions", bodyParser.urlencoded({extended: false}), (req, res) => {
     .then(tap(log("/action:web.chat.update()")))
     .then(handleResponse)
     .then(_ => res.status(200).end())
-    .catch(err => sendError(res, {
-      "channel": channel.id,
-      "user": user.id,
-      "text": err.message
-    }));
+    .catch(sendError(res, channel.id, user.id, team.id));
 });
 
 /* Start the server on specified port */
@@ -153,27 +145,37 @@ const showHelp = (teamId, userId, channelId) => teams
   }));
 
 /** Show poll message */
-const showPoll = (team_id, user_id, channel_id, argv) => polls
-  .create(poll.from(user_id, channel_id, argv))
+const showPoll = (team_id, user_id, channel_id, argv) => Promise
+  .resolve(pollModel.from(user_id, channel_id, argv))
+  .then(tap(log("/showPoll:poll.from()")))
+  .then(polls.create)
   .then(tap(log("/showPoll:polls.create()")))
   .then(poll => teams
     .get(team_id)
     .then(tap(log("/showPoll:teams.get()")))
     .then(team => ({...view.create(poll), token: team.token}))
     .then(tap(log("/showPoll:message")))
-  )
-  .then(web.chat.postMessage)
-  .then(tap(log("/showPoll:web.chat.postMessage()")))
-  .then(handleResponse)
-  .then(x => polls.update(poll._id, {"messageTs": x.ts}));
+    .then(web.chat.postMessage)
+    .then(tap(log("/showPoll:web.chat.postMessage()")))
+    .then(handleResponse)
+    .then(tap(log("/showPoll:handleResponse()")))
+    .then(msg => polls.update(poll._id, {"messageTs": msg.ts}))
+    .then(tap(log("/showPoll:polls.update()")))
+  );
 
 /**
  * Sends an error message to the Slack client.
  */
-const sendError = (res, message) => web.chat
-  .postEphemeral(message)
+const sendError = (res, channel, user, teamId) => err => teams
+  .get(teamId)
+  .then(tap(_ => console.log(err)))
+  .then(tap(log("/sendError:teams.get()")))
+  .then(({token}) => errView.dispatch(err, {channel, user, token}))
+  .then(tap(log("/sendError:errView.dispatch()")))
+  .then(web.chat.postEphemeral)
+  .then(tap(log("/sendError:web.chat.postEphemeral()")))
   .then(_ => res.status(200).end())
-  .catch(e => (console.error(e), res.status(500).end(e.message)));
+  .catch(e => (console.error(e), res.status(400).end(e.message)));
 
 /**
  * Handles a slack response object. The response is rejected if the Slack API
