@@ -1,3 +1,7 @@
+# Help
+
+## Usage
+
 To create a simple poll you can specify question and responses like this:
 
 ```
@@ -20,7 +24,7 @@ in the response text.
 /askia "What ya wanna drink?" "Double @label{IPA}" "Milk @label{Imperial Stout}"
 ```
 
-# --limit
+### --limit
 
 ```
 /askia "What ya wanna drink?" Wine Beer Scotch Pastis Water --limit 1
@@ -29,7 +33,7 @@ in the response text.
 Sets a limit of responses that a user can votes for. When set to `0` no limit
 is applied. Default value is set to `0`.
 
-# --expires
+### --expires
 
 ```
 /askia "What ya wanna drink on Friday?" Wine Beer Water --expires "1d 2h"
@@ -43,7 +47,7 @@ like this:
 * for 10 min `10min`
 * for 30 seconds `30s`
 
-# --anonymous
+### --anonymous
 
 ```
 /askia Drink? Wine Beer Water --anonymous
@@ -51,7 +55,7 @@ like this:
 
 The name of users will not be displayed while they vote
 
-# --no-anonymous-label
+### --no-anonymous-label
 
 ```
 /askia Drink? Beer Water --anonymous --no-anonymous-label
@@ -59,3 +63,20 @@ The name of users will not be displayed while they vote
 
 When the `anonymous` flag is set, hides the `anonymous poll` quote at the
 end of the poll message
+
+## Errors
+
+### Authentication
+
+When posting an /askia poll you get an error:
+
+```
+Askia Poll
+
+Slack authentication error
+
+There was an unexpected error. Please click link above to install or refresh your credentials 🙏
+
+```
+
+This authentication error requires you reinstall /askia in your Slack workspace. Click the `Slack authentication error` link to proceed with the reinstallation. Once that has been done you'll be redirected to a success page.
