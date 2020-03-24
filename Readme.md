@@ -1,6 +1,7 @@
 # /Askia Slack polling app
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![Issues](https://img.shields.io/github/issues-raw/tterb/PlayMusic.svg?maxAge=25000)](https://github.com/Askia/askia-slack-poll/issues)
 
 /askia is a free Slack app created by [Askia](https://www.askia.com) to ask & answer simple polling questions in a Slack workspace. He can be yours right now, simply download him from [here](https://bot.askia.com).
 
