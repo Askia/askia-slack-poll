@@ -156,3 +156,14 @@ Sets the times before users votes will expires. The times can be expressed like 
 The name of users will not be displayed while they vote--no-anonymous-label/askia Drink? Beer Water --anonymous --no-anonymous-labelWhen the anonymous flag is set, hides the anonymous poll quote at the end of the poll message. 
 
 /askia is licensed by [Askia - automating insight](https://www.askia.com) under [GNU GPL v3](https://github.com/Askia/askia-slack-poll/blob/master/LICENSE).
+
+## Contributing
+
+You are welcome to [create issues](https://github.com/Askia/askia-slack-poll/issues) for this project; could they be bug fixes and/or feature requests.
+In such cases, due to limited availability, we'd appreciate you provide in your issue:
+
+- The error message.
+- Slack environments (public / private channel, direct message, user group, user rights, ...)
+- Steps to reproduce the error.
+
+We also encourage contributions via [Pull Requests](https://github.com/Askia/askia-slack-poll/pulls).
