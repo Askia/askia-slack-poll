@@ -15,8 +15,9 @@ const vote        = require("./lib/action/vote.js");
 const cmd         = require("./lib/cmd.js");
 const {
   pollIdFrom,
+  isDeleteAction,
   responseFromAction,
-  tap, log
+  tap, guard, log
 } = require("./lib/util.js");
 
 /* Slack API client initialization */
@@ -96,34 +97,66 @@ app.post("/actions", bodyParser.urlencoded({extended: false}), (req, res) => {
   const {body: {payload}} = req;
   const {actions: [action], callback_id, team, user, channel} =
     JSON.parse(payload);
-  Promise
+  return Promise
     .resolve(callback_id)
     .then(tap(log("/action:request.body.callback_id")))
     .then(pollIdFrom)
     .then(tap(log("/action:pollIdFrom()")))
     .then(id => polls.get(id))
     .then(tap(log("/action:polls.get()")))
-    .then(p => responseFromAction(action, p)
-      .then(tap(log("/action:responseFromAction()")))
-      .then(x => vote.dispatch(user, p, x))
-      .then(tap(log("/action:vote.dispatch()")))
-      .then(x => polls.update(p._id, x))
-      .then(tap(log("/action:polls.update()")))
-      .then(p => view.create(p))
-      .then(tap(log("/action:view.create()")))
+    .then(poll => isDeleteAction(action)
+      ? deletePoll({team, user, poll})
+      : votePoll({action, team, user, poll})
     )
-    .then(poll => teams
-      .get(team.id)
-      .then(tap(log("/action:teams.get()")))
-      .then(team => ({...poll, token: team.token}))
-      .then(tap(log("/action:message")))
-    )
-    .then(web.chat.update)
-    .then(tap(log("/action:web.chat.update()")))
-    .then(handleResponse)
     .then(_ => res.status(200).end())
     .catch(sendError(res, channel.id, user.id, team.id));
 });
+
+const deletePoll = data => Promise
+  .resolve(data)
+  .then(guard(
+    ({user, poll}) => user.id === poll.ownerId,
+    new Error("Only the poll creator is able to remove it")
+  ))
+  .then(({team, poll}) => Promise.all([
+    polls
+      .remove(poll._id)
+      .then(tap(log("/deletePoll:polls.remove()"))),
+    teams
+      .get(team.id)
+      .then(tap(log("/deletePoll:teams.get()")))
+      .then(team => ({
+        token: team.token,
+        ts: poll.messageTs,
+        channel: poll.channelId
+      }))
+      .then(tap(log("/deletePoll:message")))
+      .then(web.chat.delete)
+      .then(tap(log("/deletePoll:web.chat.delete()")))
+      .then(handleResponse)
+  ]));
+
+const votePoll = ({action, user, poll, team}) =>
+  responseFromAction(action, poll)
+    .then(tap(log("/votePoll:responseFromAction()")))
+    .then(response => vote.dispatch(user, poll, response))
+    .then(tap(log("/votePoll:vote.dispatch()")))
+    .then(changes => polls.update(poll._id, changes))
+    .then(tap(log("/votePoll:polls.update()")))
+    .then(poll => view.create(poll))
+    .then(tap(log("/votePoll:view.create()")))
+    .then(pollView => teams
+      .get(team.id)
+      .then(tap(log("/votePoll:teams.get()")))
+      .then(team => ({
+        ...pollView,
+        token: team.token
+      }))
+      .then(tap(log("/votePoll:message")))
+    )
+    .then(web.chat.update)
+    .then(tap(log("/votePoll:web.chat.update()")))
+    .then(handleResponse);
 
 /* Start the server on specified port */
 const server = https.createServer(credentials, app);
@@ -136,9 +169,9 @@ const showHelp = (teamId, userId, channelId) => teams
   .then(team => team ? team.token : null)
   .then(tap(log("/showHelp:team.token")))
   .then(token => web.chat.postEphemeral({
-    "channel": channelId,
-    "user": userId,
-    "text": help,
+    channel: channelId,
+    user: userId,
+    text: help,
     token
   }));
 
